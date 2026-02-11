@@ -11,7 +11,7 @@ const Experience = () => {
       id: 1,
       role: 'Software & QA Engineer',
       company: 'IT Industry',
-      location: 'Lebanon / Remote',
+      location: 'Lebanon',
       period: '2019',
       type: 'Full-time',
       icon: '💼',
