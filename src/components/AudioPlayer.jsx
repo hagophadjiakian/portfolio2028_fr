@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { useAudio } from '../context/AudioContext';
@@ -18,12 +18,27 @@ const AudioPlayer = () => {
   const { audioRef, isMuted, setIsMuted } = useAudio();
   const [volume, setVolume] = useState(0.3);
   const [currentTrack, setCurrentTrack] = useState('/audio/home.mp3');
+  const [isLoading, setIsLoading] = useState(true);
+  const preloadedAudio = useRef({});
   const location = useLocation();
+
+  // Preload all audio tracks on mount
+  useEffect(() => {
+    Object.values(audioTracks).forEach((trackUrl) => {
+      if (!preloadedAudio.current[trackUrl]) {
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = trackUrl;
+        preloadedAudio.current[trackUrl] = audio;
+      }
+    });
+  }, []);
 
   // Start playing immediately on mount
   useEffect(() => {
     const track = audioTracks[location.pathname] || audioTracks['/'];
     setCurrentTrack(track);
+    setIsLoading(true);
 
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -40,6 +55,7 @@ const AudioPlayer = () => {
 
     if (newTrack !== currentTrack && audioRef.current) {
       setCurrentTrack(newTrack);
+      setIsLoading(true);
       const wasPlaying = !audioRef.current.paused && !isMuted;
 
       audioRef.current.src = newTrack;
@@ -83,6 +99,9 @@ const AudioPlayer = () => {
         ref={audioRef}
         loop
         preload="auto"
+        onCanPlayThrough={() => setIsLoading(false)}
+        onWaiting={() => setIsLoading(true)}
+        onPlaying={() => setIsLoading(false)}
       />
 
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
@@ -137,24 +156,33 @@ const AudioPlayer = () => {
             exit={{ opacity: 0 }}
             className="fixed bottom-6 left-6 z-50 flex items-center gap-2 glass px-4 py-2 rounded-full"
           >
-            <div className="flex items-end gap-1 h-4">
-              {[1, 2, 3, 4].map((i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    height: ['40%', '100%', '40%'],
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    repeat: Infinity,
-                    delay: i * 0.1,
-                  }}
-                  className="w-1 bg-coral rounded-full"
-                  style={{ height: '40%' }}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-muted ml-2">Now Playing</span>
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-coral border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-muted ml-2">Loading...</span>
+              </>
+            ) : (
+              <>
+                <div className="flex items-end gap-1 h-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        height: ['40%', '100%', '40%'],
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        repeat: Infinity,
+                        delay: i * 0.1,
+                      }}
+                      className="w-1 bg-coral rounded-full"
+                      style={{ height: '40%' }}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-muted ml-2">Now Playing</span>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

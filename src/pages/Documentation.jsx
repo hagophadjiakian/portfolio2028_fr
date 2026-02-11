@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import OptimizedVideo from '../components/OptimizedVideo';
 import { useAudio } from '../context/AudioContext';
 
 const Documentation = () => {
@@ -45,20 +46,14 @@ const Documentation = () => {
                 </div>
               </div>
 
-              <div className="rounded-lg overflow-hidden bg-black/50">
-                <video
-                  ref={videoRef}
-                  className="w-full h-auto"
-                  controls
-                  preload="metadata"
-                  onPlay={handleVideoPlay}
-                  onPause={handleVideoPause}
-                  onEnded={handleVideoPause}
-                >
-                  <source src="/assets/videos/ajz.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
+              <OptimizedVideo
+                ref={videoRef}
+                src="/assets/videos/ajz.mp4"
+                title="Video Documentation"
+                onPlay={handleVideoPlay}
+                onPause={handleVideoPause}
+                onEnded={handleVideoPause}
+              />
             </GlassCard>
           </AnimatedItem>
         </div>

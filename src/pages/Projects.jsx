@@ -2,6 +2,8 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import OptimizedImage from '../components/OptimizedImage';
+import OptimizedVideo from '../components/OptimizedVideo';
 import { useAudio } from '../context/AudioContext';
 
 const Projects = () => {
@@ -164,20 +166,14 @@ const Projects = () => {
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <div className="rounded-lg overflow-hidden bg-black/50">
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      className="w-full h-auto"
-                      controls
-                      preload="metadata"
-                      onPlay={() => handleVideoPlay(index)}
-                      onPause={handleVideoPause}
-                      onEnded={handleVideoPause}
-                    >
-                      <source src={video.src} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
+                  <OptimizedVideo
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    src={video.src}
+                    title={video.title}
+                    onPlay={() => handleVideoPlay(index)}
+                    onPause={handleVideoPause}
+                    onEnded={handleVideoPause}
+                  />
                 </GlassCard>
               </AnimatedItem>
             ))}
@@ -213,7 +209,7 @@ const Projects = () => {
                     className="rounded-lg overflow-hidden cursor-pointer relative group"
                     onClick={() => setZoomedImage(item)}
                   >
-                    <img
+                    <OptimizedImage
                       src={item.src}
                       alt={item.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
@@ -303,20 +299,14 @@ const Projects = () => {
                   <span className="text-hope">✦</span>
                   Demo Video
                 </h4>
-                <div className="rounded-lg overflow-hidden bg-black/50">
-                  <video
-                    ref={(el) => (videoRefs.current[4] = el)}
-                    className="w-full h-auto"
-                    controls
-                    preload="metadata"
-                    onPlay={() => handleVideoPlay(4)}
-                    onPause={handleVideoPause}
-                    onEnded={handleVideoPause}
-                  >
-                    <source src="/assets/videos/controller.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
+                <OptimizedVideo
+                  ref={(el) => (videoRefs.current[4] = el)}
+                  src="/assets/videos/controller.mp4"
+                  title="EMG Controller Demo"
+                  onPlay={() => handleVideoPlay(4)}
+                  onPause={handleVideoPause}
+                  onEnded={handleVideoPause}
+                />
               </div>
 
               {/* Impact Quote */}
@@ -432,22 +422,14 @@ const Projects = () => {
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <div className="rounded-lg overflow-hidden bg-black/50">
-                    <video
-                      ref={(el) => (videoRefs.current[5 + index] = el)}
-                      className="w-full h-auto"
-                      controls
-                      playsInline
-                      preload="auto"
-                      onPlay={() => handleVideoPlay(5 + index)}
-                      onPause={handleVideoPause}
-                      onEnded={handleVideoPause}
-                    >
-                      <source src={video.src} type="video/mp4; codecs=avc1.42E01E,mp4a.40.2" />
-                      <source src={video.src} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
+                  <OptimizedVideo
+                    ref={(el) => (videoRefs.current[5 + index] = el)}
+                    src={video.src}
+                    title={video.title}
+                    onPlay={() => handleVideoPlay(5 + index)}
+                    onPause={handleVideoPause}
+                    onEnded={handleVideoPause}
+                  />
                 </GlassCard>
               </AnimatedItem>
             ))}
