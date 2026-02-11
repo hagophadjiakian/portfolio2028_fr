@@ -55,7 +55,7 @@ const Documentation = () => {
                   onPause={handleVideoPause}
                   onEnded={handleVideoPause}
                 >
-                  <source src="https://hagophadjiakian2028-be.up.railway.app/assets/videos/ajz.mp4" type="video/mp4" />
+                  <source src="/assets/videos/ajz.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
