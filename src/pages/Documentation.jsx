@@ -1,20 +1,9 @@
-import React, { useRef, useCallback } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
-import { useAudio } from '../context/AudioContext';
 
 const Documentation = () => {
-  const { pauseForVideo, resumeAfterVideo } = useAudio();
-  const videoRef = useRef(null);
-
-  const handleVideoPlay = useCallback(() => {
-    pauseForVideo();
-  }, [pauseForVideo]);
-
-  const handleVideoPause = useCallback(() => {
-    resumeAfterVideo();
-  }, [resumeAfterVideo]);
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -45,19 +34,15 @@ const Documentation = () => {
                 </div>
               </div>
 
-              <div className="rounded-lg overflow-hidden bg-black/50">
-                <video
-                  ref={videoRef}
-                  className="w-full h-auto"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  onPlay={handleVideoPlay}
-                  onPause={handleVideoPause}
-                  onEnded={handleVideoPause}
-                >
-                  <source src="/assets/videos/ajz.mp4" type="video/mp4" />
-                </video>
+              <div className="rounded-lg overflow-hidden bg-black/50 aspect-video">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/O7V3FCIaXww"
+                  title="Video Documentation"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
             </GlassCard>
           </AnimatedItem>
