@@ -5,6 +5,7 @@ const WelcomeOverlay = ({ onEnter }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const handleEnter = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setIsVisible(false);
     if (onEnter) onEnter();
   };
