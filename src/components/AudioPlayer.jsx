@@ -15,36 +15,25 @@ const audioTracks = {
 };
 
 const AudioPlayer = () => {
-  const { audioRef, isMuted, setIsMuted, shouldAutoPlay } = useAudio();
+  const { audioRef, preloadedAudio, isMuted, setIsMuted, shouldAutoPlay } = useAudio();
   const [volume, setVolume] = useState(0.3);
   const [currentTrack, setCurrentTrack] = useState('/audio/home.mp3');
   const [isLoading, setIsLoading] = useState(true);
   const [hasStarted, setHasStarted] = useState(false);
-  const preloadedAudio = useRef({});
   const location = useLocation();
-
-  // Preload all audio tracks on mount
-  useEffect(() => {
-    Object.values(audioTracks).forEach((trackUrl) => {
-      if (!preloadedAudio.current[trackUrl]) {
-        const audio = new Audio();
-        audio.preload = 'auto';
-        audio.src = trackUrl;
-        preloadedAudio.current[trackUrl] = audio;
-      }
-    });
-  }, []);
 
   // Set up audio source on mount
   useEffect(() => {
     const track = audioTracks[location.pathname] || audioTracks['/'];
     setCurrentTrack(track);
-    setIsLoading(true);
 
     if (audioRef.current) {
       audioRef.current.volume = volume;
       audioRef.current.src = track;
-      audioRef.current.load();
+      // Check if already preloaded
+      if (preloadedAudio.current[track] && preloadedAudio.current[track].readyState >= 3) {
+        setIsLoading(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
