@@ -14,6 +14,7 @@ export const AudioProvider = ({ children }) => {
   const audioRef = useRef(null);
   const [isMuted, setIsMuted] = useState(false);
   const [wasPlayingBeforeVideo, setWasPlayingBeforeVideo] = useState(false);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
 
   const pauseForVideo = useCallback(() => {
     if (audioRef.current && !audioRef.current.paused) {
@@ -29,12 +30,18 @@ export const AudioProvider = ({ children }) => {
     }
   }, [wasPlayingBeforeVideo, isMuted]);
 
+  const triggerPlay = useCallback(() => {
+    setShouldAutoPlay(true);
+  }, []);
+
   const value = {
     audioRef,
     isMuted,
     setIsMuted,
     pauseForVideo,
     resumeAfterVideo,
+    shouldAutoPlay,
+    triggerPlay,
   };
 
   return (

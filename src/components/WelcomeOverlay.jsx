@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAudio } from '../context/AudioContext';
 
 const WelcomeOverlay = ({ onEnter }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const { triggerPlay } = useAudio();
 
   const handleEnter = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    triggerPlay();
     setIsVisible(false);
     if (onEnter) onEnter();
   };

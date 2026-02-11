@@ -15,10 +15,11 @@ const audioTracks = {
 };
 
 const AudioPlayer = () => {
-  const { audioRef, isMuted, setIsMuted } = useAudio();
+  const { audioRef, isMuted, setIsMuted, shouldAutoPlay } = useAudio();
   const [volume, setVolume] = useState(0.3);
   const [currentTrack, setCurrentTrack] = useState('/audio/home.mp3');
   const [isLoading, setIsLoading] = useState(true);
+  const [hasStarted, setHasStarted] = useState(false);
   const preloadedAudio = useRef({});
   const location = useLocation();
 
@@ -34,7 +35,7 @@ const AudioPlayer = () => {
     });
   }, []);
 
-  // Start playing immediately on mount
+  // Set up audio source on mount
   useEffect(() => {
     const track = audioTracks[location.pathname] || audioTracks['/'];
     setCurrentTrack(track);
@@ -44,10 +45,17 @@ const AudioPlayer = () => {
       audioRef.current.volume = volume;
       audioRef.current.src = track;
       audioRef.current.load();
-      audioRef.current.play().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Start playing when triggered by user interaction
+  useEffect(() => {
+    if (shouldAutoPlay && !hasStarted && audioRef.current) {
+      audioRef.current.play().catch(() => {});
+      setHasStarted(true);
+    }
+  }, [shouldAutoPlay, hasStarted, audioRef]);
 
   // Change track when route changes
   useEffect(() => {
