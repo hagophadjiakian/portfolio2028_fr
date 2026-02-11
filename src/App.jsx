@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import ParticleBackground from './components/ParticleBackground';
 import AudioPlayer from './components/AudioPlayer';
 import WelcomeOverlay from './components/WelcomeOverlay';
+import ScrollToTop from './components/ScrollToTop';
 
 import Home from './pages/Home';
 import About from './pages/About';
@@ -23,6 +24,7 @@ function App() {
   return (
     <AudioProvider>
       <Router>
+        <ScrollToTop />
         <div className="min-h-screen bg-primary relative">
           <WelcomeOverlay onEnter={() => setHasEntered(true)} />
           <ParticleBackground />
