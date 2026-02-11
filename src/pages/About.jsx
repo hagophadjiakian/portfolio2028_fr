@@ -2,8 +2,6 @@ import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
-import OptimizedImage from '../components/OptimizedImage';
-import OptimizedVideo from '../components/OptimizedVideo';
 import { useAudio } from '../context/AudioContext';
 
 const About = () => {
@@ -126,7 +124,7 @@ const About = () => {
                 {/* Profile Header */}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-coral to-sky p-1">
-                    <OptimizedImage
+                    <img
                       src="/assets/images/profilepic.jpg"
                       alt="Hagop Hadjiakian"
                       className="w-full h-full rounded-full object-cover"
@@ -265,10 +263,11 @@ const About = () => {
                     className="rounded-lg overflow-hidden cursor-pointer relative group"
                     onClick={() => setZoomedImage(item)}
                   >
-                    <OptimizedImage
+                    <img
                       src={item.src}
                       alt={item.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-lg">
                       <span className="text-white text-sm flex items-center gap-2 bg-black/50 px-3 py-2 rounded-full">
@@ -297,14 +296,20 @@ const About = () => {
               <p className="text-center text-muted mb-4">
                 A moment of triumph — completing my Engineering degree against all odds
               </p>
-              <OptimizedVideo
-                ref={graduationVideoRef}
-                src="/assets/videos/graduation.mp4"
-                title="Graduation Day"
-                onPlay={handleGraduationPlay}
-                onPause={handleGraduationPause}
-                onEnded={handleGraduationPause}
-              />
+              <div className="rounded-lg overflow-hidden bg-black/50">
+                <video
+                  ref={graduationVideoRef}
+                  className="w-full h-auto"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  onPlay={handleGraduationPlay}
+                  onPause={handleGraduationPause}
+                  onEnded={handleGraduationPause}
+                >
+                  <source src="/assets/videos/graduation.mp4" type="video/mp4" />
+                </video>
+              </div>
             </GlassCard>
           </AnimatedItem>
         </div>
@@ -396,14 +401,20 @@ const About = () => {
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <OptimizedVideo
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    src={video.src}
-                    title={video.title}
-                    onPlay={() => handleVideoPlay(index)}
-                    onPause={() => handleVideoPause(index)}
-                    onEnded={() => handleVideoPause(index)}
-                  />
+                  <div className="rounded-lg overflow-hidden bg-black/50">
+                    <video
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      className="w-full h-auto"
+                      controls
+                      playsInline
+                      preload="metadata"
+                      onPlay={() => handleVideoPlay(index)}
+                      onPause={() => handleVideoPause(index)}
+                      onEnded={() => handleVideoPause(index)}
+                    >
+                      <source src={video.src} type="video/mp4" />
+                    </video>
+                  </div>
                 </GlassCard>
               </AnimatedItem>
             ))}
