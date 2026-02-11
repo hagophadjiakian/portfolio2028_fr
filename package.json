@@ -2,6 +2,9 @@
   "name": "hagop-portfolio",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0 <21.0.0"
+  },
   "dependencies": {
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.0.0",
