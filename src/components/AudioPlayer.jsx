@@ -31,6 +31,7 @@ const AudioPlayer = () => {
       audioRef.current.load();
       audioRef.current.play().catch(() => {});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Change track when route changes
@@ -52,6 +53,7 @@ const AudioPlayer = () => {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   // Handle volume changes
@@ -59,6 +61,7 @@ const AudioPlayer = () => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume]);
 
   // Handle mute/unmute

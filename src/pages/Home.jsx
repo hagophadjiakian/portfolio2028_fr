@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Hero3D from '../components/Hero3D';
 
+const motivationalQuotes = [
+  "The body achieves what the mind believes.",
+  "Every step forward is a victory.",
+  "Resilience is not just surviving, it's thriving."
+];
+
 const Home = () => {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -17,12 +23,6 @@ const Home = () => {
       return () => clearTimeout(timeout);
     }
   }, [currentIndex]);
-
-  const motivationalQuotes = [
-    "The body achieves what the mind believes.",
-    "Every step forward is a victory.",
-    "Resilience is not just surviving, it's thriving."
-  ];
 
   const [quoteIndex, setQuoteIndex] = useState(0);
 
