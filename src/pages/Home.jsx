@@ -69,7 +69,7 @@ const Home = () => {
           >
             <div className="w-56 h-56 md:w-72 md:h-72 mx-auto rounded-full bg-gradient-to-br from-coral to-sky p-1 shadow-lg overflow-hidden">
               <img
-                src="http://localhost:8000/assets/images/survivor.jpg"
+                src="https://hagophadjiakian2028-be.up.railway.app/assets/images/survivor.jpg"
                 alt="Hagop Hadjiakian"
                 className="w-full h-full rounded-full object-contain bg-secondary"
               />

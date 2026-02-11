@@ -125,7 +125,7 @@ const About = () => {
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-coral to-sky p-1">
                     <img
-                      src="http://localhost:8000/assets/images/profilepic.jpg"
+                      src="https://hagophadjiakian2028-be.up.railway.app/assets/images/profilepic.jpg"
                       alt="Hagop Hadjiakian"
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -249,9 +249,9 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { src: 'http://localhost:8000/assets/images/diploma.jpg', title: 'Engineering Diploma', icon: '🎓', color: 'coral' },
-              { src: 'http://localhost:8000/assets/images/deans.jpg', title: "Dean's List Recognition", icon: '🏆', color: 'hope' },
-              { src: 'http://localhost:8000/assets/images/dog.jpeg', title: 'My Companion', icon: '🐕', color: 'sky' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/images/diploma.jpg', title: 'Engineering Diploma', icon: '🎓', color: 'coral' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/images/deans.jpg', title: "Dean's List Recognition", icon: '🏆', color: 'hope' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/images/dog.jpeg', title: 'My Companion', icon: '🐕', color: 'sky' },
             ].map((item) => (
               <AnimatedItem key={item.src}>
                 <GlassCard glow glowColor={item.color}>
@@ -305,7 +305,7 @@ const About = () => {
                   onPause={handleGraduationPause}
                   onEnded={handleGraduationPause}
                 >
-                  <source src="http://localhost:8000/assets/videos/graduation.mp4" type="video/mp4" />
+                  <source src="https://hagophadjiakian2028-be.up.railway.app/assets/videos/graduation.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
@@ -388,11 +388,11 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { src: 'http://localhost:8000/assets/videos/japan.mp4', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
-              { src: 'http://localhost:8000/assets/videos/kafoWalker.mp4', title: 'KAFO Walker Progress', icon: '🚶' },
-              { src: 'http://localhost:8000/assets/videos/afo.mp4', title: 'AFO Training Session', icon: '🦿' },
-              { src: 'http://localhost:8000/assets/videos/red1.mp4', title: 'Rehabilitation Exercise', icon: '💪' },
-              { src: 'http://localhost:8000/assets/videos/red2.mp4', title: 'Recovery Training', icon: '✨' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/japan.mp4', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/kafoWalker.mp4', title: 'KAFO Walker Progress', icon: '🚶' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/afo.mp4', title: 'AFO Training Session', icon: '🦿' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/red1.mp4', title: 'Rehabilitation Exercise', icon: '💪' },
+              { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/red2.mp4', title: 'Recovery Training', icon: '✨' },
             ].map((video, index) => (
               <AnimatedItem key={video.src}>
                 <GlassCard glow glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}>

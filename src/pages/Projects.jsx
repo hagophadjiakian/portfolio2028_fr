@@ -41,22 +41,22 @@ const Projects = () => {
   }, [zoomedImage]);
 
   const project1Videos = [
-    { src: 'http://localhost:8000/assets/videos/exo1.mp4', title: 'Exoskeleton Demo', icon: '🦿' },
-    { src: 'http://localhost:8000/assets/videos/emg1.mp4', title: 'EMG Signal Testing', icon: '⚡' },
-    { src: 'http://localhost:8000/assets/videos/emg2.mp4', title: 'Muscle Activity Detection', icon: '📊' },
-    { src: 'http://localhost:8000/assets/videos/emg3.mp4', title: 'EMG System in Action', icon: '🔬' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/exo1.mp4', title: 'Exoskeleton Demo', icon: '🦿' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/emg1.mp4', title: 'EMG Signal Testing', icon: '⚡' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/emg2.mp4', title: 'Muscle Activity Detection', icon: '📊' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/emg3.mp4', title: 'EMG System in Action', icon: '🔬' },
   ];
 
   const project1Images = [
-    { src: 'http://localhost:8000/assets/images/projectposter.jpg', title: 'Project Poster', icon: '📋' },
-    { src: 'http://localhost:8000/assets/images/exo2.jpg', title: 'Exoskeleton Design', icon: '🦿' },
-    { src: 'http://localhost:8000/assets/images/book.jpg', title: 'Research & Documentation', icon: '📖' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/images/projectposter.jpg', title: 'Project Poster', icon: '📋' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/images/exo2.jpg', title: 'Exoskeleton Design', icon: '🦿' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/images/book.jpg', title: 'Research & Documentation', icon: '📖' },
   ];
 
   const project3Videos = [
-    { src: 'http://localhost:8000/assets/videos/bike.mp4', title: 'Passive/Active Cycling Device', icon: '🚴' },
-    { src: 'http://localhost:8000/assets/videos/ankle.mp4', title: 'Ankle Mobilization System', icon: '🦶' },
-    { src: 'http://localhost:8000/assets/videos/water.mp4', title: 'Hydrostimulation Therapy', icon: '💧' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/bike.mp4', title: 'Passive/Active Cycling Device', icon: '🚴' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/ankle.mp4', title: 'Ankle Mobilization System', icon: '🦶' },
+    { src: 'https://hagophadjiakian2028-be.up.railway.app/assets/videos/water.mp4', title: 'Hydrostimulation Therapy', icon: '💧' },
   ];
 
   return (
@@ -313,7 +313,7 @@ const Projects = () => {
                     onPause={handleVideoPause}
                     onEnded={handleVideoPause}
                   >
-                    <source src="http://localhost:8000/assets/videos/controller.mp4" type="video/mp4" />
+                    <source src="https://hagophadjiakian2028-be.up.railway.app/assets/videos/controller.mp4" type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </div>
