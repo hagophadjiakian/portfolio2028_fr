@@ -505,12 +505,22 @@ const Projects = () => {
               </div>
 
               {/* Zoomed image */}
-              <div className="flex-1 flex items-center justify-center overflow-hidden">
+              <div className="flex-1 flex items-center justify-center overflow-hidden relative">
                 <img
                   src={zoomedImage.src}
                   alt={zoomedImage.title}
                   className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl"
                 />
+                {/* Large floating X button on image - easy to see on laptop */}
+                <button
+                  onClick={() => setZoomedImage(null)}
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 w-10 h-10 sm:w-12 sm:h-12 bg-coral hover:bg-coral-light text-white rounded-full flex items-center justify-center transition-all shadow-lg hover:scale-110"
+                  title="Close"
+                >
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
 
               {/* Zoom hint - visible on all devices */}
