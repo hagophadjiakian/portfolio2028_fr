@@ -484,24 +484,12 @@ const Projects = () => {
               className="relative max-w-4xl max-h-[95vh] w-full flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Mobile-friendly close button - always visible at top */}
-              <div className="flex items-center justify-between mb-3 px-2">
-                {/* Image title */}
+              {/* Image title */}
+              <div className="flex items-center justify-center mb-3 px-2">
                 <div className="text-white flex items-center gap-2">
                   <span className="text-xl">{zoomedImage.icon}</span>
                   <span className="font-semibold text-sm sm:text-base">{zoomedImage.title}</span>
                 </div>
-
-                {/* Close button - larger and more visible on mobile */}
-                <button
-                  onClick={() => setZoomedImage(null)}
-                  className="flex items-center gap-2 bg-coral/90 hover:bg-coral text-white px-4 py-2 rounded-full transition-colors font-medium text-sm sm:text-base"
-                >
-                  <span className="hidden sm:inline">Close</span>
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
               </div>
 
               {/* Zoomed image */}

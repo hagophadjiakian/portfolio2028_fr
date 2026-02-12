@@ -291,14 +291,14 @@ const About = () => {
                   transition={{ duration: 0.5 }}
                   className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
                 >
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12 text-left'}`}>
+                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-4 sm:pr-12 text-right' : 'pl-4 sm:pl-12 text-left'}`}>
                     <GlassCard hover={false} className={item.type === 'life' ? 'border-coral/30' : ''}>
-                      <div className="flex items-center gap-2 mb-2" style={{ justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start' }}>
+                      <div className="flex items-center gap-2 mb-2 flex-wrap" style={{ justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start' }}>
                         <span className="text-2xl">{item.icon}</span>
                         <span className="text-coral font-mono text-sm">{item.year}</span>
                       </div>
-                      <h4 className="text-xl font-semibold mt-2">{item.title}</h4>
-                      <p className="text-muted mt-2">{item.description}</p>
+                      <h4 className="text-base sm:text-xl font-semibold mt-2 break-words">{item.title}</h4>
+                      <p className="text-muted mt-2 text-sm sm:text-base">{item.description}</p>
                     </GlassCard>
                   </div>
                   <div className="relative z-10">
@@ -381,43 +381,46 @@ const About = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4"
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 p-2 sm:p-4"
             onClick={() => setZoomedImage(null)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="relative max-w-4xl max-h-[90vh] w-full"
+              className="relative max-w-4xl max-h-[95vh] w-full flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button */}
-              <button
-                onClick={() => setZoomedImage(null)}
-                className="absolute -top-12 right-0 text-white hover:text-coral transition-colors flex items-center gap-2"
-              >
-                <span>Close</span>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
               {/* Image title */}
-              <div className="absolute -top-12 left-0 text-white flex items-center gap-2">
-                <span className="text-xl">{zoomedImage.icon}</span>
-                <span className="font-semibold">{zoomedImage.title}</span>
+              <div className="flex items-center justify-center mb-3 px-2">
+                <div className="text-white flex items-center gap-2">
+                  <span className="text-xl">{zoomedImage.icon}</span>
+                  <span className="font-semibold text-sm sm:text-base">{zoomedImage.title}</span>
+                </div>
               </div>
 
               {/* Zoomed image */}
-              <img
-                src={zoomedImage.src}
-                alt={zoomedImage.title}
-                className="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl"
-              />
+              <div className="flex-1 flex items-center justify-center overflow-hidden relative">
+                <img
+                  src={zoomedImage.src}
+                  alt={zoomedImage.title}
+                  className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                />
+                {/* Large floating X button on image - easy to see */}
+                <button
+                  onClick={() => setZoomedImage(null)}
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 w-10 h-10 sm:w-12 sm:h-12 bg-coral hover:bg-coral-light text-white rounded-full flex items-center justify-center transition-all shadow-lg hover:scale-110"
+                  title="Close"
+                >
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
               {/* Zoom hint */}
-              <p className="text-center text-muted text-sm mt-4">
-                Click outside or press ESC to close
+              <p className="text-center text-muted text-xs sm:text-sm mt-3 px-2">
+                Tap outside or press the X button to close
               </p>
             </motion.div>
           </motion.div>
