@@ -393,7 +393,7 @@ const About = () => {
               { src: '/assets/videos/japan.mp4', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
               { videoId: 'OvAIdbngms8', title: 'KAFO Walker Progress', icon: '🚶', isYoutube: true },
               { videoId: 'Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦿', isYoutube: true },
-              { src: '/assets/videos/red1.mp4', title: 'Rehabilitation Exercise', icon: '💪' },
+              { videoId: 'wTIbsn8npcM', title: 'Rehabilitation Exercise', icon: '💪', isYoutube: true },
               { videoId: '6wFjlG343Jo', title: 'Recovery Training', icon: '✨', isYoutube: true },
             ].map((video, index) => (
               <AnimatedItem key={video.videoId || video.src}>
