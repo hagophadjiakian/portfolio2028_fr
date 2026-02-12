@@ -85,6 +85,8 @@ const About = () => {
                       src="/assets/images/profilepic.jpg"
                       alt="Hagop Hadjiakian"
                       className="w-full h-full rounded-full object-cover"
+                      loading="eager"
+                      fetchpriority="high"
                     />
                   </div>
                   <div>

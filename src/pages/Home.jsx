@@ -72,6 +72,8 @@ const Home = () => {
                 src="/assets/images/survivor.jpg"
                 alt="Hagop Hadjiakian"
                 className="w-full h-full rounded-full object-contain bg-secondary"
+                loading="eager"
+                fetchpriority="high"
               />
             </div>
           </motion.div>
