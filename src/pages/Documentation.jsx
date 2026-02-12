@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import YouTubePlayer from '../components/YouTubePlayer';
 
 const Documentation = () => {
 
@@ -34,15 +35,8 @@ const Documentation = () => {
                 </div>
               </div>
 
-              <div className="rounded-lg overflow-hidden bg-black/50 aspect-video">
-                <iframe
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/O7V3FCIaXww"
-                  title="Video Documentation"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+              <div className="rounded-lg overflow-hidden bg-black/50">
+                <YouTubePlayer videoId="O7V3FCIaXww" title="Video Documentation" />
               </div>
             </GlassCard>
           </AnimatedItem>

@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import YouTubePlayer from '../components/YouTubePlayer';
 import { useAudio } from '../context/AudioContext';
 
 const About = () => {
@@ -391,29 +392,33 @@ const About = () => {
             {[
               { src: '/assets/videos/japan.mp4', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
               { src: '/assets/videos/kafoWalker.mp4', title: 'KAFO Walker Progress', icon: '🚶' },
-              { src: '/assets/videos/afo.mp4', title: 'AFO Training Session', icon: '🦿' },
+              { videoId: 'Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦿', isYoutube: true },
               { src: '/assets/videos/red1.mp4', title: 'Rehabilitation Exercise', icon: '💪' },
               { src: '/assets/videos/red2.mp4', title: 'Recovery Training', icon: '✨' },
             ].map((video, index) => (
-              <AnimatedItem key={video.src}>
+              <AnimatedItem key={video.videoId || video.src}>
                 <GlassCard glow glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
                   <div className="rounded-lg overflow-hidden bg-black/50">
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      className="w-full h-auto"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      onPlay={() => handleVideoPlay(index)}
-                      onPause={() => handleVideoPause(index)}
-                      onEnded={() => handleVideoPause(index)}
-                    >
-                      <source src={video.src} type="video/mp4" />
-                    </video>
+                    {video.isYoutube ? (
+                      <YouTubePlayer videoId={video.videoId} title={video.title} />
+                    ) : (
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        className="w-full h-auto"
+                        controls
+                        playsInline
+                        preload="metadata"
+                        onPlay={() => handleVideoPlay(index)}
+                        onPause={() => handleVideoPause(index)}
+                        onEnded={() => handleVideoPause(index)}
+                      >
+                        <source src={video.src} type="video/mp4" />
+                      </video>
+                    )}
                   </div>
                 </GlassCard>
               </AnimatedItem>

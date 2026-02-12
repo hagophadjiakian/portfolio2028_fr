@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import YouTubePlayer from '../components/YouTubePlayer';
 import { useAudio } from '../context/AudioContext';
 
 const Projects = () => {
@@ -42,10 +43,9 @@ const Projects = () => {
 
   const project1Videos = [
     { src: '/assets/videos/exo1.mp4', title: 'Exoskeleton Demo', icon: '🦿' },
-    { src: 'https://www.youtube.com/embed/M_FjHuaS_cQ', title: 'EMG Signal Testing', icon: '⚡', isYoutube: true },
-    { src: 'https://www.youtube.com/embed/6KrIZY9vJAo', title: 'Muscle Activity Detection', icon: '📊', isYoutube: true },
-    { src: 'https://www.youtube.com/embed/Mwd52trIwRg', title: 'EMG System in Action', icon: '🔬', isYoutube: true },
-    { src: 'https://www.youtube.com/embed/Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦾', isYoutube: true },
+    { videoId: 'M_FjHuaS_cQ', title: 'EMG Signal Testing', icon: '⚡', isYoutube: true },
+    { videoId: '6KrIZY9vJAo', title: 'Muscle Activity Detection', icon: '📊', isYoutube: true },
+    { videoId: 'Mwd52trIwRg', title: 'EMG System in Action', icon: '🔬', isYoutube: true },
   ];
 
   const project1Images = [
@@ -55,8 +55,8 @@ const Projects = () => {
   ];
 
   const project3Videos = [
-    { src: 'https://www.youtube.com/embed/4tQ8UKjAMCw', title: 'Passive/Active Cycling Device', icon: '🚴', isYoutube: true },
-    { src: 'https://www.youtube.com/embed/IPR-4TjGFVk', title: 'Ankle Mobilization System', icon: '🦶', isYoutube: true },
+    { videoId: '4tQ8UKjAMCw', title: 'Passive/Active Cycling Device', icon: '🚴', isYoutube: true },
+    { videoId: 'IPR-4TjGFVk', title: 'Ankle Mobilization System', icon: '🦶', isYoutube: true },
     { src: '/assets/videos/water.mp4', title: 'Hydrostimulation Therapy', icon: '💧' },
   ];
 
@@ -159,22 +159,15 @@ const Projects = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {project1Videos.map((video, index) => (
-              <AnimatedItem key={video.src}>
+              <AnimatedItem key={video.videoId || video.src}>
                 <GlassCard glow glowColor={index % 2 === 0 ? 'coral' : 'sky'}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <div className={`rounded-lg overflow-hidden bg-black/50 ${video.isYoutube ? 'aspect-video' : ''}`}>
+                  <div className="rounded-lg overflow-hidden bg-black/50">
                     {video.isYoutube ? (
-                      <iframe
-                        className="w-full h-full"
-                        src={video.src}
-                        title={video.title}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <YouTubePlayer videoId={video.videoId} title={video.title} />
                     ) : (
                       <video
                         ref={(el) => (videoRefs.current[index] = el)}
@@ -316,15 +309,8 @@ const Projects = () => {
                   <span className="text-hope">✦</span>
                   Demo Video
                 </h4>
-                <div className="rounded-lg overflow-hidden bg-black/50 aspect-video">
-                  <iframe
-                    className="w-full h-full"
-                    src="https://www.youtube.com/embed/rXHn76RE3Ao"
-                    title="EMG Controlled Motor Demo"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                <div className="rounded-lg overflow-hidden bg-black/50">
+                  <YouTubePlayer videoId="rXHn76RE3Ao" title="EMG Controlled Motor Demo" />
                 </div>
               </div>
 
@@ -435,22 +421,15 @@ const Projects = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {project3Videos.map((video, index) => (
-              <AnimatedItem key={video.src}>
+              <AnimatedItem key={video.videoId || video.src}>
                 <GlassCard glow glowColor={index === 0 ? 'coral' : index === 1 ? 'sky' : 'hope'}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <div className={`rounded-lg overflow-hidden bg-black/50 ${video.isYoutube ? 'aspect-video' : ''}`}>
+                  <div className="rounded-lg overflow-hidden bg-black/50">
                     {video.isYoutube ? (
-                      <iframe
-                        className="w-full h-full"
-                        src={video.src}
-                        title={video.title}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <YouTubePlayer videoId={video.videoId} title={video.title} />
                     ) : (
                       <video
                         ref={(el) => (videoRefs.current[5 + index] = el)}
