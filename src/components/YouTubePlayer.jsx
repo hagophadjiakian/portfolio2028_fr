@@ -120,9 +120,11 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
   // Show thumbnail with play button
   if (!isPlaying) {
     return (
-      <div
-        className={`aspect-video bg-black relative cursor-pointer group ${className}`}
+      <button
+        type="button"
+        className={`aspect-video bg-black relative cursor-pointer group w-full block ${className}`}
         onClick={handlePlay}
+        style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
       >
         {/* Use smaller thumbnail (mqdefault) for faster mobile loading, upgrade to hqdefault on load */}
         <img
@@ -130,17 +132,18 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
           srcSet={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg 320w, https://img.youtube.com/vi/${videoId}/hqdefault.jpg 480w`}
           sizes="(max-width: 640px) 320px, 480px"
           alt={title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover pointer-events-none select-none"
           loading="lazy"
+          draggable="false"
         />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
-          <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors pointer-events-none">
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 group-active:scale-95 transition-transform shadow-lg">
             <svg className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
             </svg>
           </div>
         </div>
-      </div>
+      </button>
     );
   }
 
