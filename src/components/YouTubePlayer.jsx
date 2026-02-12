@@ -26,33 +26,68 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
     return () => setActiveCallbacks.delete(callback);
   }, [videoId, isPlaying]);
 
-  // Listen for YouTube player state changes via postMessage
+  // Listen for YouTube player state changes
   useEffect(() => {
     if (!isPlaying) return;
 
     const handleMessage = (event) => {
-      if (event.origin !== 'https://www.youtube.com') return;
+      // Accept messages from YouTube
+      if (!event.origin.includes('youtube.com')) return;
 
       try {
-        const data = JSON.parse(event.data);
-        // YouTube sends playerState: 1 = playing, 2 = paused, 0 = ended
-        if (data.event === 'onStateChange') {
-          if (data.info === 2 || data.info === 0) {
-            // Paused or ended - resume soundtrack
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+
+        // Check for state change events
+        if (data.event === 'onStateChange' || data.event === 'infoDelivery') {
+          const playerState = data.info?.playerState ?? data.info;
+
+          // 1 = playing, 2 = paused, 0 = ended
+          if (playerState === 2 || playerState === 0) {
             resumeAfterVideo();
-          } else if (data.info === 1) {
-            // Playing - pause soundtrack
+          } else if (playerState === 1) {
             pauseForVideo();
           }
         }
+
+        // Handle initialDelivery which contains playerState
+        if (data.event === 'initialDelivery' && data.info?.playerState !== undefined) {
+          if (data.info.playerState === 2 || data.info.playerState === 0) {
+            resumeAfterVideo();
+          }
+        }
       } catch (e) {
-        // Not a JSON message, ignore
+        // Not JSON or parsing error, ignore
       }
     };
 
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [isPlaying, pauseForVideo, resumeAfterVideo]);
+
+    // Send listening command to iframe after it loads
+    const sendListeningCommand = () => {
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(JSON.stringify({
+          event: 'listening',
+          id: videoId,
+          channel: 'widget'
+        }), '*');
+
+        // Also request current state
+        iframeRef.current.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: 'addEventListener',
+          args: ['onStateChange']
+        }), '*');
+      }
+    };
+
+    // Try sending command after a short delay
+    const timer = setTimeout(sendListeningCommand, 1000);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      clearTimeout(timer);
+    };
+  }, [isPlaying, pauseForVideo, resumeAfterVideo, videoId]);
 
   const handlePlay = () => {
     setGlobalActiveVideo(videoId);
@@ -71,6 +106,15 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
 
   const handleIframeLoad = () => {
     setIsLoading(false);
+
+    // Initialize YouTube API listener
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(JSON.stringify({
+        event: 'listening',
+        id: videoId,
+        channel: 'widget'
+      }), '*');
+    }
   };
 
   // Show thumbnail with play button
@@ -96,7 +140,7 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
     );
   }
 
-  // Show iframe when playing - enablejsapi=1 allows state change messages
+  // Show iframe when playing
   return (
     <div className={`aspect-video bg-black relative ${className}`}>
       {isLoading && (
@@ -118,7 +162,7 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
       <iframe
         ref={iframeRef}
         className="w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&origin=${window.location.origin}`}
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&widgetid=1`}
         title={title}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
