@@ -57,7 +57,7 @@ const Projects = () => {
   const project3Videos = [
     { videoId: '4tQ8UKjAMCw', title: 'Passive/Active Cycling Device', icon: '🚴', isYoutube: true },
     { videoId: 'IPR-4TjGFVk', title: 'Ankle Mobilization System', icon: '🦶', isYoutube: true },
-    { src: '/assets/videos/water.mp4', title: 'Hydrostimulation Therapy', icon: '💧' },
+    { videoId: '6xpJWvZf5kk', title: 'Hydrostimulation Therapy', icon: '💧', isYoutube: true },
   ];
 
   return (
