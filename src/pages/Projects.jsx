@@ -222,7 +222,7 @@ const Projects = () => {
                       src={item.src}
                       alt={item.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="eager"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-lg">
                       <span className="text-white text-sm flex items-center gap-2 bg-black/50 px-3 py-2 rounded-full">
