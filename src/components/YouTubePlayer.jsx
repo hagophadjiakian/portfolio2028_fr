@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudio } from '../context/AudioContext';
 
 // Global state for YouTube API
 let apiReady = false;
 let apiLoadPromise = null;
-const players = new Set();
+const players = new Map(); // Map of videoId to player
 
 const loadYouTubeAPI = () => {
   if (apiReady && window.YT && window.YT.Player) {
@@ -16,14 +16,12 @@ const loadYouTubeAPI = () => {
   }
 
   apiLoadPromise = new Promise((resolve) => {
-    // Check if already loaded
     if (window.YT && window.YT.Player) {
       apiReady = true;
       resolve();
       return;
     }
 
-    // Store original callback if exists
     const originalCallback = window.onYouTubeIframeAPIReady;
 
     window.onYouTubeIframeAPIReady = () => {
@@ -32,7 +30,6 @@ const loadYouTubeAPI = () => {
       resolve();
     };
 
-    // Check if script already exists
     if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
@@ -45,43 +42,46 @@ const loadYouTubeAPI = () => {
 };
 
 // Pause all other YouTube players
-const pauseOtherPlayers = (currentPlayer) => {
-  players.forEach((player) => {
-    if (player !== currentPlayer && player.getPlayerState) {
+const pauseOtherPlayers = (currentVideoId) => {
+  players.forEach((player, id) => {
+    if (id !== currentVideoId && player.getPlayerState) {
       try {
-        const state = player.getPlayerState();
-        if (state === 1) { // Playing
+        if (player.getPlayerState() === 1) {
           player.pauseVideo();
         }
-      } catch (e) {
-        // Player might be destroyed
-      }
+      } catch (e) {}
     }
   });
 };
 
-// Check if any player is currently playing
+// Check if any player is playing
 const isAnyPlayerPlaying = () => {
-  for (const player of players) {
+  for (const player of players.values()) {
     try {
       if (player.getPlayerState && player.getPlayerState() === 1) {
         return true;
       }
-    } catch (e) {
-      // Player might be destroyed
-    }
+    } catch (e) {}
   }
   return false;
 };
 
 const YouTubePlayer = ({ videoId, title, className = '' }) => {
+  const [isActivated, setIsActivated] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const containerRef = useRef(null);
   const playerRef = useRef(null);
   const { pauseForVideo, resumeAfterVideo } = useAudio();
 
+  const handleClick = useCallback(() => {
+    setIsActivated(true);
+  }, []);
+
   useEffect(() => {
+    if (!isActivated) return;
+
     let mounted = true;
-    const playerId = `yt-${videoId}-${Math.random().toString(36).substr(2, 9)}`;
+    const playerId = `yt-${videoId}-${Date.now()}`;
 
     const initPlayer = async () => {
       await loadYouTubeAPI();
@@ -96,23 +96,25 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
           playsinline: 1,
           rel: 0,
           modestbranding: 1,
+          autoplay: 1, // Auto-play when activated
         },
         events: {
-          onReady: () => {
+          onReady: (event) => {
             if (mounted) {
-              players.add(playerRef.current);
+              setIsReady(true);
+              players.set(videoId, playerRef.current);
+              // Pause other videos and soundtrack
+              pauseOtherPlayers(videoId);
+              pauseForVideo();
             }
           },
           onStateChange: (event) => {
             if (!mounted) return;
 
-            // 1 = playing, 2 = paused, 0 = ended
             if (event.data === 1) {
-              // Video started playing
-              pauseOtherPlayers(playerRef.current);
+              pauseOtherPlayers(videoId);
               pauseForVideo();
             } else if (event.data === 2 || event.data === 0) {
-              // Video paused or ended
               if (!isAnyPlayerPlaying()) {
                 resumeAfterVideo();
               }
@@ -126,17 +128,42 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
 
     return () => {
       mounted = false;
+      players.delete(videoId);
       if (playerRef.current) {
-        players.delete(playerRef.current);
         try {
           playerRef.current.destroy();
-        } catch (e) {
-          // Ignore destroy errors
-        }
+        } catch (e) {}
       }
     };
-  }, [videoId, pauseForVideo, resumeAfterVideo]);
+  }, [isActivated, videoId, pauseForVideo, resumeAfterVideo]);
 
+  // Show thumbnail with play button until clicked
+  if (!isActivated) {
+    return (
+      <div
+        className={`aspect-video bg-black/50 relative cursor-pointer group ${className}`}
+        onClick={handleClick}
+      >
+        {/* YouTube thumbnail */}
+        <img
+          src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+          alt={title}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+        {/* Play button overlay */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+            <svg className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show player once activated
   return (
     <div className={`aspect-video bg-black/50 ${className}`}>
       <div ref={containerRef} className="w-full h-full" />
