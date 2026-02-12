@@ -1,55 +1,11 @@
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
-import { useAudio } from '../context/AudioContext';
 
 const About = () => {
-  const { pauseForVideo, resumeAfterVideo } = useAudio();
-  const videoRefs = useRef([]);
-  const graduationVideoRef = useRef(null);
   const [zoomedImage, setZoomedImage] = useState(null);
-
-  const handleVideoPlay = useCallback((index) => {
-    // Pause all other videos
-    videoRefs.current.forEach((video, i) => {
-      if (video && i !== index && !video.paused) {
-        video.pause();
-      }
-    });
-    // Pause the background soundtrack
-    pauseForVideo();
-  }, [pauseForVideo]);
-
-  const handleVideoPause = useCallback((index) => {
-    // Check if all videos are paused (including graduation video)
-    const anyPlaying = videoRefs.current.some((video) => video && !video.paused);
-    const graduationPlaying = graduationVideoRef.current && !graduationVideoRef.current.paused;
-    if (!anyPlaying && !graduationPlaying) {
-      // Resume the background soundtrack
-      resumeAfterVideo();
-    }
-  }, [resumeAfterVideo]);
-
-  const handleGraduationPlay = useCallback(() => {
-    // Pause all other videos
-    videoRefs.current.forEach((video) => {
-      if (video && !video.paused) {
-        video.pause();
-      }
-    });
-    // Pause the background soundtrack
-    pauseForVideo();
-  }, [pauseForVideo]);
-
-  const handleGraduationPause = useCallback(() => {
-    // Check if all videos are paused
-    const anyPlaying = videoRefs.current.some((video) => video && !video.paused);
-    if (!anyPlaying) {
-      resumeAfterVideo();
-    }
-  }, [resumeAfterVideo]);
 
   // Close lightbox on ESC key
   useEffect(() => {
@@ -298,18 +254,7 @@ const About = () => {
                 A moment of triumph — completing my Engineering degree against all odds
               </p>
               <div className="rounded-lg overflow-hidden bg-black/50">
-                <video
-                  ref={graduationVideoRef}
-                  className="w-full h-auto"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  onPlay={handleGraduationPlay}
-                  onPause={handleGraduationPause}
-                  onEnded={handleGraduationPause}
-                >
-                  <source src="/assets/videos/graduation.mp4" type="video/mp4" />
-                </video>
+                <YouTubePlayer videoId="GzARVvM03kA" title="Graduation Day" />
               </div>
             </GlassCard>
           </AnimatedItem>
@@ -390,35 +335,20 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { src: '/assets/videos/japan.mp4', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
-              { videoId: 'OvAIdbngms8', title: 'KAFO Walker Progress', icon: '🚶', isYoutube: true },
-              { videoId: 'Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦿', isYoutube: true },
-              { videoId: 'wTIbsn8npcM', title: 'Rehabilitation Exercise', icon: '💪', isYoutube: true },
-              { videoId: '6wFjlG343Jo', title: 'Recovery Training', icon: '✨', isYoutube: true },
+              { videoId: '5kuD94961R0', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
+              { videoId: 'OvAIdbngms8', title: 'KAFO Walker Progress', icon: '🚶' },
+              { videoId: 'Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦿' },
+              { videoId: 'wTIbsn8npcM', title: 'Rehabilitation Exercise', icon: '💪' },
+              { videoId: '6wFjlG343Jo', title: 'Recovery Training', icon: '✨' },
             ].map((video, index) => (
-              <AnimatedItem key={video.videoId || video.src}>
+              <AnimatedItem key={video.videoId}>
                 <GlassCard glow glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
                   <div className="rounded-lg overflow-hidden bg-black/50">
-                    {video.isYoutube ? (
-                      <YouTubePlayer videoId={video.videoId} title={video.title} />
-                    ) : (
-                      <video
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        className="w-full h-auto"
-                        controls
-                        playsInline
-                        preload="metadata"
-                        onPlay={() => handleVideoPlay(index)}
-                        onPause={() => handleVideoPause(index)}
-                        onEnded={() => handleVideoPause(index)}
-                      >
-                        <source src={video.src} type="video/mp4" />
-                      </video>
-                    )}
+                    <YouTubePlayer videoId={video.videoId} title={video.title} />
                   </div>
                 </GlassCard>
               </AnimatedItem>
