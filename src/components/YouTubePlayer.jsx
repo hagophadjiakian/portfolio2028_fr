@@ -124,10 +124,14 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
         className={`aspect-video bg-black relative cursor-pointer group ${className}`}
         onClick={handlePlay}
       >
+        {/* Use smaller thumbnail (mqdefault) for faster mobile loading, upgrade to hqdefault on load */}
         <img
-          src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+          src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+          srcSet={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg 320w, https://img.youtube.com/vi/${videoId}/hqdefault.jpg 480w`}
+          sizes="(max-width: 640px) 320px, 480px"
           alt={title}
           className="w-full h-full object-cover"
+          loading="lazy"
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">

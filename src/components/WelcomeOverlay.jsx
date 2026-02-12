@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAudio } from '../context/AudioContext';
 
 const WelcomeOverlay = ({ onEnter }) => {
   const [isVisible, setIsVisible] = useState(true);
   const { triggerPlay } = useAudio();
+
+  // Prevent body scroll when overlay is visible
+  useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isVisible]);
 
   const handleEnter = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });

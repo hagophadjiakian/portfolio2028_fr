@@ -474,43 +474,48 @@ const Projects = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4"
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 p-2 sm:p-4"
             onClick={() => setZoomedImage(null)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="relative max-w-4xl max-h-[90vh] w-full"
+              className="relative max-w-4xl max-h-[95vh] w-full flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button */}
-              <button
-                onClick={() => setZoomedImage(null)}
-                className="absolute -top-12 right-0 text-white hover:text-coral transition-colors flex items-center gap-2"
-              >
-                <span>Close</span>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              {/* Mobile-friendly close button - always visible at top */}
+              <div className="flex items-center justify-between mb-3 px-2">
+                {/* Image title */}
+                <div className="text-white flex items-center gap-2">
+                  <span className="text-xl">{zoomedImage.icon}</span>
+                  <span className="font-semibold text-sm sm:text-base">{zoomedImage.title}</span>
+                </div>
 
-              {/* Image title */}
-              <div className="absolute -top-12 left-0 text-white flex items-center gap-2">
-                <span className="text-xl">{zoomedImage.icon}</span>
-                <span className="font-semibold">{zoomedImage.title}</span>
+                {/* Close button - larger and more visible on mobile */}
+                <button
+                  onClick={() => setZoomedImage(null)}
+                  className="flex items-center gap-2 bg-coral/90 hover:bg-coral text-white px-4 py-2 rounded-full transition-colors font-medium text-sm sm:text-base"
+                >
+                  <span className="hidden sm:inline">Close</span>
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
 
               {/* Zoomed image */}
-              <img
-                src={zoomedImage.src}
-                alt={zoomedImage.title}
-                className="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl"
-              />
+              <div className="flex-1 flex items-center justify-center overflow-hidden">
+                <img
+                  src={zoomedImage.src}
+                  alt={zoomedImage.title}
+                  className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                />
+              </div>
 
-              {/* Zoom hint */}
-              <p className="text-center text-muted text-sm mt-4">
-                Click outside or press ESC to close
+              {/* Zoom hint - visible on all devices */}
+              <p className="text-center text-muted text-xs sm:text-sm mt-3 px-2">
+                Tap outside or press the X button to close
               </p>
             </motion.div>
           </motion.div>

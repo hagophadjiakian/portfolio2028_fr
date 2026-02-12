@@ -77,6 +77,28 @@ const AudioPlayer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume]);
 
+  // Mute when tab/window is not visible, unmute when coming back
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!audioRef.current) return;
+
+      if (document.hidden) {
+        // Tab is hidden - pause audio (store state for when we return)
+        if (!audioRef.current.paused && !isMuted) {
+          audioRef.current.pause();
+        }
+      } else {
+        // Tab is visible again - resume if not muted
+        if (!isMuted && hasStarted) {
+          audioRef.current.play().catch(() => {});
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isMuted, hasStarted, audioRef]);
+
   // Handle mute/unmute
   const toggleMute = () => {
     if (audioRef.current) {
