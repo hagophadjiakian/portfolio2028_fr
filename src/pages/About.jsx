@@ -391,10 +391,10 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { src: '/assets/videos/japan.mp4', title: 'HAL Exoskeleton in Japan', icon: '🇯🇵' },
-              { src: '/assets/videos/kafoWalker.mp4', title: 'KAFO Walker Progress', icon: '🚶' },
+              { videoId: 'OvAIdbngms8', title: 'KAFO Walker Progress', icon: '🚶', isYoutube: true },
               { videoId: 'Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦿', isYoutube: true },
               { src: '/assets/videos/red1.mp4', title: 'Rehabilitation Exercise', icon: '💪' },
-              { src: '/assets/videos/red2.mp4', title: 'Recovery Training', icon: '✨' },
+              { videoId: '6wFjlG343Jo', title: 'Recovery Training', icon: '✨', isYoutube: true },
             ].map((video, index) => (
               <AnimatedItem key={video.videoId || video.src}>
                 <GlassCard glow glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}>
