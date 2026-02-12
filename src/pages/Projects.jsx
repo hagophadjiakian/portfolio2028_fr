@@ -42,7 +42,7 @@ const Projects = () => {
   }, [zoomedImage]);
 
   const project1Videos = [
-    { src: '/assets/videos/exo1.mp4', title: 'Exoskeleton Demo', icon: '🦿' },
+    { videoId: '6zXxEmv3FGQ', title: 'Exoskeleton Demo', icon: '🦿', isYoutube: true },
     { videoId: 'M_FjHuaS_cQ', title: 'EMG Signal Testing', icon: '⚡', isYoutube: true },
     { videoId: '6KrIZY9vJAo', title: 'Muscle Activity Detection', icon: '📊', isYoutube: true },
     { videoId: 'Mwd52trIwRg', title: 'EMG System in Action', icon: '🔬', isYoutube: true },
