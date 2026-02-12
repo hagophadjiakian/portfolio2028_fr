@@ -68,7 +68,6 @@ const isAnyPlayerPlaying = () => {
 
 const YouTubePlayer = ({ videoId, title, className = '' }) => {
   const [isActivated, setIsActivated] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const containerRef = useRef(null);
   const playerRef = useRef(null);
   const { pauseForVideo, resumeAfterVideo } = useAudio();
@@ -99,11 +98,9 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
           autoplay: 1, // Auto-play when activated
         },
         events: {
-          onReady: (event) => {
+          onReady: () => {
             if (mounted) {
-              setIsReady(true);
               players.set(videoId, playerRef.current);
-              // Pause other videos and soundtrack
               pauseOtherPlayers(videoId);
               pauseForVideo();
             }
