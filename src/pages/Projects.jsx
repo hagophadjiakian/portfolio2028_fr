@@ -42,9 +42,10 @@ const Projects = () => {
 
   const project1Videos = [
     { src: '/assets/videos/exo1.mp4', title: 'Exoskeleton Demo', icon: '🦿' },
-    { src: '/assets/videos/emg1.mp4', title: 'EMG Signal Testing', icon: '⚡' },
-    { src: '/assets/videos/emg2.mp4', title: 'Muscle Activity Detection', icon: '📊' },
-    { src: '/assets/videos/emg3.mp4', title: 'EMG System in Action', icon: '🔬' },
+    { src: 'https://www.youtube.com/embed/M_FjHuaS_cQ', title: 'EMG Signal Testing', icon: '⚡', isYoutube: true },
+    { src: 'https://www.youtube.com/embed/6KrIZY9vJAo', title: 'Muscle Activity Detection', icon: '📊', isYoutube: true },
+    { src: 'https://www.youtube.com/embed/Mwd52trIwRg', title: 'EMG System in Action', icon: '🔬', isYoutube: true },
+    { src: 'https://www.youtube.com/embed/Vy1L4aWXQZY', title: 'AFO Training Session', icon: '🦾', isYoutube: true },
   ];
 
   const project1Images = [
@@ -55,7 +56,7 @@ const Projects = () => {
 
   const project3Videos = [
     { src: 'https://www.youtube.com/embed/4tQ8UKjAMCw', title: 'Passive/Active Cycling Device', icon: '🚴', isYoutube: true },
-    { src: '/assets/videos/ankle.mp4', title: 'Ankle Mobilization System', icon: '🦶' },
+    { src: 'https://www.youtube.com/embed/IPR-4TjGFVk', title: 'Ankle Mobilization System', icon: '🦶', isYoutube: true },
     { src: '/assets/videos/water.mp4', title: 'Hydrostimulation Therapy', icon: '💧' },
   ];
 
@@ -164,19 +165,30 @@ const Projects = () => {
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <div className="rounded-lg overflow-hidden bg-black/50">
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      className="w-full h-auto"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      onPlay={() => handleVideoPlay(index)}
-                      onPause={handleVideoPause}
-                      onEnded={handleVideoPause}
-                    >
-                      <source src={video.src} type="video/mp4" />
-                    </video>
+                  <div className={`rounded-lg overflow-hidden bg-black/50 ${video.isYoutube ? 'aspect-video' : ''}`}>
+                    {video.isYoutube ? (
+                      <iframe
+                        className="w-full h-full"
+                        src={video.src}
+                        title={video.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        className="w-full h-auto"
+                        controls
+                        playsInline
+                        preload="metadata"
+                        onPlay={() => handleVideoPlay(index)}
+                        onPause={handleVideoPause}
+                        onEnded={handleVideoPause}
+                      >
+                        <source src={video.src} type="video/mp4" />
+                      </video>
+                    )}
                   </div>
                 </GlassCard>
               </AnimatedItem>
