@@ -54,7 +54,7 @@ const Projects = () => {
   ];
 
   const project3Videos = [
-    { src: '/assets/videos/bike.mp4', title: 'Passive/Active Cycling Device', icon: '🚴' },
+    { src: 'https://www.youtube.com/embed/4tQ8UKjAMCw', title: 'Passive/Active Cycling Device', icon: '🚴', isYoutube: true },
     { src: '/assets/videos/ankle.mp4', title: 'Ankle Mobilization System', icon: '🦶' },
     { src: '/assets/videos/water.mp4', title: 'Hydrostimulation Therapy', icon: '💧' },
   ];
@@ -304,19 +304,15 @@ const Projects = () => {
                   <span className="text-hope">✦</span>
                   Demo Video
                 </h4>
-                <div className="rounded-lg overflow-hidden bg-black/50">
-                  <video
-                    ref={(el) => (videoRefs.current[4] = el)}
-                    className="w-full h-auto"
-                    controls
-                    playsInline
-                    preload="metadata"
-                    onPlay={() => handleVideoPlay(4)}
-                    onPause={handleVideoPause}
-                    onEnded={handleVideoPause}
-                  >
-                    <source src="/assets/videos/controller.mp4" type="video/mp4" />
-                  </video>
+                <div className="rounded-lg overflow-hidden bg-black/50 aspect-video">
+                  <iframe
+                    className="w-full h-full"
+                    src="https://www.youtube.com/embed/rXHn76RE3Ao"
+                    title="EMG Controlled Motor Demo"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </div>
               </div>
 
@@ -433,19 +429,30 @@ const Projects = () => {
                     <span className="text-xl">{video.icon}</span>
                     <h4 className="font-semibold text-sky-light">{video.title}</h4>
                   </div>
-                  <div className="rounded-lg overflow-hidden bg-black/50">
-                    <video
-                      ref={(el) => (videoRefs.current[5 + index] = el)}
-                      className="w-full h-auto"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      onPlay={() => handleVideoPlay(5 + index)}
-                      onPause={handleVideoPause}
-                      onEnded={handleVideoPause}
-                    >
-                      <source src={video.src} type="video/mp4" />
-                    </video>
+                  <div className={`rounded-lg overflow-hidden bg-black/50 ${video.isYoutube ? 'aspect-video' : ''}`}>
+                    {video.isYoutube ? (
+                      <iframe
+                        className="w-full h-full"
+                        src={video.src}
+                        title={video.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        ref={(el) => (videoRefs.current[5 + index] = el)}
+                        className="w-full h-auto"
+                        controls
+                        playsInline
+                        preload="metadata"
+                        onPlay={() => handleVideoPlay(5 + index)}
+                        onPause={handleVideoPause}
+                        onEnded={handleVideoPause}
+                      >
+                        <source src={video.src} type="video/mp4" />
+                      </video>
+                    )}
                   </div>
                 </GlassCard>
               </AnimatedItem>
