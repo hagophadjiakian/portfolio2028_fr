@@ -108,9 +108,6 @@ const Footer = () => {
             © {new Date().getFullYear()} HH SCI Survivor
             <span className="text-hope">✦</span>
           </p>
-          <p className="text-muted text-sm mt-2 md:mt-0">
-            Built with resilience, React & FastAPI
-          </p>
         </div>
       </div>
     </footer>
