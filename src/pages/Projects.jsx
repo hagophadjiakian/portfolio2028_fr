@@ -1,14 +1,60 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
 import { useAudio } from '../context/AudioContext';
 
+// Image component with loading state
+const ProjectImage = ({ src, alt, className, onClick }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  return (
+    <div className="relative w-full h-48 bg-dark-lighter rounded-lg overflow-hidden">
+      {/* Loading skeleton */}
+      {!isLoaded && !isError && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="animate-pulse w-full h-full bg-gradient-to-r from-dark-lighter via-dark to-dark-lighter" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg className="w-8 h-8 text-muted animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+          </div>
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`w-full h-48 object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+        loading="eager"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setIsError(true)}
+        onClick={onClick}
+      />
+    </div>
+  );
+};
+
 const Projects = () => {
   const { pauseForVideo, resumeAfterVideo } = useAudio();
   const videoRefs = useRef([]);
   const [zoomedImage, setZoomedImage] = useState(null);
+
+  // Preload gallery images on mount
+  const imagesToPreload = useMemo(() => [
+    '/assets/images/projectposter.jpg',
+    '/assets/images/exo2.jpg',
+    '/assets/images/book.jpg',
+  ], []);
+
+  useEffect(() => {
+    imagesToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [imagesToPreload]);
 
   const handleVideoPlay = useCallback((index) => {
     // Pause all other videos
@@ -218,13 +264,13 @@ const Projects = () => {
                     className="rounded-lg overflow-hidden cursor-pointer relative group"
                     onClick={() => setZoomedImage(item)}
                   >
-                    <img
+                    <ProjectImage
                       src={item.src}
                       alt={item.title}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
+                      className="group-hover:scale-105 transition-transform duration-300"
+                      onClick={() => setZoomedImage(item)}
                     />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-lg">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-lg pointer-events-none">
                       <span className="text-white text-sm flex items-center gap-2 bg-black/50 px-3 py-2 rounded-full">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
