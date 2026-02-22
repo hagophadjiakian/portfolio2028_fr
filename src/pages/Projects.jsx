@@ -1,14 +1,17 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
 import { useAudio } from '../context/AudioContext';
 
-// Image component with loading state
+// Image component with loading state and WebP support
 const ProjectImage = ({ src, alt, className, onClick }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+
+  // Generate WebP source from jpg path
+  const webpSrc = src.replace('.jpg', '.webp');
 
   return (
     <div className="relative w-full h-48 bg-dark-lighter rounded-lg overflow-hidden">
@@ -16,23 +19,21 @@ const ProjectImage = ({ src, alt, className, onClick }) => {
       {!isLoaded && !isError && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="animate-pulse w-full h-full bg-gradient-to-r from-dark-lighter via-dark to-dark-lighter" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg className="w-8 h-8 text-muted animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
-          </div>
         </div>
       )}
-      <img
-        src={src}
-        alt={alt}
-        className={`w-full h-48 object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
-        loading="eager"
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setIsError(true)}
-        onClick={onClick}
-      />
+      <picture>
+        <source srcSet={webpSrc} type="image/webp" />
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-48 object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+          loading="eager"
+          decoding="async"
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setIsError(true)}
+          onClick={onClick}
+        />
+      </picture>
     </div>
   );
 };
@@ -42,19 +43,22 @@ const Projects = () => {
   const videoRefs = useRef([]);
   const [zoomedImage, setZoomedImage] = useState(null);
 
-  // Preload gallery images on mount
-  const imagesToPreload = useMemo(() => [
-    '/assets/images/projectposter.jpg',
-    '/assets/images/exo2.jpg',
-    '/assets/images/book.jpg',
-  ], []);
-
+  // Preload gallery images on mount (WebP for modern browsers)
   useEffect(() => {
-    imagesToPreload.forEach((src) => {
-      const img = new Image();
-      img.src = src;
+    const images = [
+      '/assets/images/projectposter.webp',
+      '/assets/images/exo2.webp',
+      '/assets/images/book.webp',
+    ];
+    images.forEach((src) => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      link.type = 'image/webp';
+      document.head.appendChild(link);
     });
-  }, [imagesToPreload]);
+  }, []);
 
   const handleVideoPlay = useCallback((index) => {
     // Pause all other videos
