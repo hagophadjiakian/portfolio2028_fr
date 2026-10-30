@@ -55,3 +55,27 @@ export const fullYearsSince = (date, now = new Date()) => {
 
 export const yearsSinceInjury = () => fullYearsSince(INJURY_DATE);
 export const yearsInTech = () => fullYearsSince(TECH_START);
+
+// Title and description for each page (browser tab, search results, link previews).
+export const ROUTE_META = {
+  '/': {
+    title: null,
+    description:
+      'Hagop Hadjiakian — software and QA engineer, electrical engineer and spinal cord injury survivor building rehabilitation technology.',
+  },
+  '/about': {
+    title: 'My Story',
+    description:
+      'From a spinal cord injury in 2013 to an engineering degree, HAL exoskeleton rehabilitation in Japan and building rehabilitation technology.',
+  },
+  '/projects': {
+    title: 'Projects',
+    description: 'Passive knee exoskeleton, EMG-controlled motor device and home-built neurological rehabilitation devices.',
+  },
+  '/skills': { title: 'Skills', description: 'Testing and QA, programming, DevOps and rehabilitation-technology skills.' },
+  '/experience': { title: 'Journey', description: 'Work, rehabilitation and education milestones of Hagop Hadjiakian.' },
+  '/videos': { title: 'Videos', description: 'Video records of my rehabilitation journey and projects.' },
+  '/contact': { title: 'Contact', description: 'Get in touch with Hagop Hadjiakian by email, LinkedIn or GitHub.' },
+};
+
+export const pageTitle = (title) => (title ? `${title} | ${PROFILE.name}` : `${PROFILE.name} | Portfolio`);
