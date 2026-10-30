@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
-import { yearsSinceInjury, yearsInTech } from '../data/site';
+import { yearsSinceInjury, yearsInTech, PROFILE } from '../data/site';
+import { SocialIconRow } from '../components/SocialLinks';
 
 const About = () => {
   const [zoomedImage, setZoomedImage] = useState(null);
@@ -51,7 +52,7 @@ const About = () => {
     {
       year: '2013',
       title: 'Life-Changing Moment',
-      description: 'Experienced spinal cord injury (T6 complete). The beginning of a new chapter - not an ending, but a transformation.',
+      description: 'Spinal cord injury at the T6 level, initially diagnosed as complete. The beginning of a new chapter - not an ending, but a transformation.',
       type: 'life',
       icon: '🦋'
     },
@@ -93,7 +94,12 @@ const About = () => {
                   <div>
                     <h3 className="text-2xl font-bold">Hagop Hadjiakian</h3>
                     <p className="text-coral font-mono text-sm">SCI Survivor • Engineer</p>
-                    <p className="text-muted text-sm">Lebanon / Armenia</p>
+                    <p className="text-muted text-sm">{PROFILE.location}</p>
+                    <SocialIconRow
+                      only={['GitHub', 'LinkedIn', 'NeurolinkUp']}
+                      className="mt-2 gap-3"
+                      iconClassName="w-5 h-5"
+                    />
                   </div>
                 </div>
 
@@ -105,14 +111,15 @@ const About = () => {
 
                   <p>
                     In <span className="text-coral font-semibold">2013</span>, I experienced a spinal cord injury
-                    that changed my life forever. Diagnosed as a complete paraplegic at the T6 level, doctors said
-                    I would never walk again.
+                    that changed my life forever. I was initially diagnosed with a complete injury at the T6 level,
+                    and doctors said I would never walk again.
                   </p>
 
                   <p>
                     But I refused to accept that fate. In <span className="text-coral font-semibold">2015</span>,
                     I traveled to Japan for rehabilitation with the <span className="text-hope">HAL exoskeleton by Cyberdyne</span>.
-                    Through neuroplasticity training, I regained sensation and can now walk short distances with a KAFO walker.
+                    Since then I have regained sensation and voluntary movement in my hips and knees, and I can walk
+                    short distances with a KAFO walker.
                   </p>
 
                   <p className="text-sky-light font-serif italic">

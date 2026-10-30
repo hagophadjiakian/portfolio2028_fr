@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
-import { PROFILE } from '../data/site';
+import { PROFILE, LINKS } from '../data/site';
+import SocialIcon from '../components/SocialIcon';
+import { SocialIconRow, CvButton, externalProps } from '../components/SocialLinks';
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -52,38 +54,6 @@ ${formData.message}`;
     setSubmitStatus('opened');
   };
 
-  const contactInfo = [
-    {
-      icon: '📧',
-      label: 'Email',
-      value: 'hagophadjiakian@gmail.com',
-      href: 'mailto:hagophadjiakian@gmail.com',
-    },
-    {
-      icon: '📍',
-      label: 'Location',
-      value: 'Lebanon / Armenia',
-      href: null,
-    },
-    {
-      icon: '💼',
-      label: 'LinkedIn',
-      value: 'hagop-a-hadjiakian',
-      href: 'https://www.linkedin.com/in/hagop-a-hadjiakian-744b32156',
-    },
-    {
-      icon: '📸',
-      label: 'Instagram',
-      value: '@hagop_a_hadji_akian',
-      href: 'https://www.instagram.com/hagop_a_hadji_akian/',
-    },
-    {
-      icon: '📘',
-      label: 'Facebook',
-      value: 'Hagop Hadjiakian',
-      href: 'https://www.facebook.com/hagop.aris.hadjiakian/',
-    },
-  ];
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -105,7 +75,7 @@ ${formData.message}`;
           <AnimatedItem>
             <GlassCard glow glowColor="coral" hover={false}>
               <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span>✉️</span>
+                <span aria-hidden="true">✉️</span>
                 Send a Message
               </h3>
 
@@ -189,24 +159,44 @@ ${formData.message}`;
             <AnimatedItem>
               <GlassCard glow glowColor="sky">
                 <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <span>🌐</span>
+                  <span aria-hidden="true">🌐</span>
                   Find Me Online
                 </h3>
-                <div className="space-y-6">
-                  {contactInfo.map((info, index) => (
-                    <motion.div key={info.label} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} className="flex items-center gap-4">
-                      <div className="text-2xl">{info.icon}</div>
-                      <div>
-                        <p className="text-sm text-muted">{info.label}</p>
-                        {info.href ? (
-                          <a href={info.href} {...(!info.href.startsWith('mailto:') && { target: '_blank', rel: 'noopener noreferrer' })} className="text-white hover:text-coral transition-colors">{info.value}</a>
-                        ) : (
-                          <p className="text-white">{info.value}</p>
-                        )}
+                <ul className="space-y-5">
+                  {LINKS.map((link, index) => (
+                    <motion.li
+                      key={link.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.08 }}
+                      className="flex items-center gap-4"
+                    >
+                      <span className="w-10 h-10 rounded-full glass flex items-center justify-center text-sky-light shrink-0">
+                        <SocialIcon name={link.icon} className="w-5 h-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-muted">{link.name}</p>
+                        <a
+                          href={link.href}
+                          {...externalProps(link.href)}
+                          className="text-white hover:text-coral transition-colors break-all"
+                        >
+                          {link.handle}
+                        </a>
                       </div>
-                    </motion.div>
+                    </motion.li>
                   ))}
-                </div>
+                  <li className="flex items-center gap-4">
+                    <span className="w-10 h-10 rounded-full glass flex items-center justify-center shrink-0" aria-hidden="true">
+                      📍
+                    </span>
+                    <div>
+                      <p className="text-sm text-muted">Location</p>
+                      <p className="text-white">{PROFILE.location}</p>
+                    </div>
+                  </li>
+                </ul>
               </GlassCard>
             </AnimatedItem>
 
@@ -220,24 +210,13 @@ ${formData.message}`;
                   Whether you want to discuss technology, share your own journey of resilience,
                   or collaborate on projects that make a difference — I'm here to listen.
                 </p>
-                <div className="flex gap-4">
-                  {[
-                    { href: 'mailto:hagophadjiakian@gmail.com', icon: '📧' },
-                    { href: 'https://www.linkedin.com/in/hagop-a-hadjiakian-744b32156', icon: '💼' },
-                    { href: 'https://www.instagram.com/hagop_a_hadji_akian/', icon: '📸' },
-                    { href: 'https://www.facebook.com/hagop.aris.hadjiakian/', icon: '📘' },
-                  ].map((social, i) => (
-                    <motion.a
-                      key={i}
-                      href={social.href}
-                      {...(!social.href.startsWith('mailto:') && { target: '_blank', rel: 'noopener noreferrer' })}
-                      whileHover={{ scale: 1.1, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-3 glass rounded-lg text-2xl hover:bg-coral/10 transition-colors"
-                    >
-                      {social.icon}
-                    </motion.a>
-                  ))}
+                <SocialIconRow
+                  only={['Email', 'GitHub', 'LinkedIn', 'NeurolinkUp']}
+                  linkClassName="p-3 glass rounded-lg text-sky-light hover:text-coral hover:bg-coral/10 transition-colors"
+                  iconClassName="w-6 h-6"
+                />
+                <div className="mt-6">
+                  <CvButton />
                 </div>
               </GlassCard>
             </AnimatedItem>

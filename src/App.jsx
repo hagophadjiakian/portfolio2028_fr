@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 import { AudioProvider } from './context/AudioContext';
@@ -15,7 +15,7 @@ import About from './pages/About';
 import Projects from './pages/Projects';
 import Skills from './pages/Skills';
 import Experience from './pages/Experience';
-import Documentation from './pages/Documentation';
+import Videos from './pages/Videos';
 import Contact from './pages/Contact';
 
 function App() {
@@ -35,7 +35,8 @@ function App() {
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/skills" element={<Skills />} />
                 <Route path="/experience" element={<Experience />} />
-                <Route path="/documentation" element={<Documentation />} />
+                <Route path="/videos" element={<Videos />} />
+                <Route path="/documentation" element={<Navigate to="/videos" replace />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>
             </AnimatePresence>

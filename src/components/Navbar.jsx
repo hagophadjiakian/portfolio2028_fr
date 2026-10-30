@@ -2,20 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+export const NAV_LINKS = [
+  { path: '/', label: 'Home' },
+  { path: '/about', label: 'My Story' },
+  { path: '/projects', label: 'Projects' },
+  { path: '/skills', label: 'Skills' },
+  { path: '/experience', label: 'Journey' },
+  { path: '/videos', label: 'Videos' },
+  { path: '/contact', label: 'Connect' },
+];
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-
-  const links = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'My Story' },
-    { path: '/projects', label: 'Projects' },
-    { path: '/skills', label: 'Skills' },
-    { path: '/experience', label: 'Journey' },
-    { path: '/documentation', label: 'Docs' },
-    { path: '/contact', label: 'Connect' },
-  ];
+  const links = NAV_LINKS;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);

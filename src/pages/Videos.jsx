@@ -4,11 +4,11 @@ import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
 
-const Documentation = () => {
+const Videos = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="Documentation" subtitle="Visual records of my journey and projects">
+      <AnimatedSection title="Videos" subtitle="Video records of my journey and projects">
 
         {/* Motivational intro */}
         <motion.div
@@ -17,7 +17,7 @@ const Documentation = () => {
           className="text-center mb-12"
         >
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
-            "Every moment documented is a step remembered."
+            "Every moment recorded is a step remembered."
           </p>
         </motion.div>
 
@@ -60,4 +60,4 @@ const Documentation = () => {
   );
 };
 
-export default Documentation;
+export default Videos;
