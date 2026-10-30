@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import { yearsSinceInjury } from '../data/site';
@@ -65,9 +64,9 @@ const Skills = () => {
     <div className="min-h-screen pt-24 pb-16">
       <AnimatedSection title="Skills & Expertise" titleAs="h1" subtitle="Technologies I use to turn challenges into solutions">
         {/* Motivational intro */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">"Every skill learned is a step toward independence."</p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {skillGroups.map((group, index) => (
@@ -93,7 +92,7 @@ const Skills = () => {
         </div>
 
         {/* Core Strengths */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-20">
+        <div className="mt-20 reveal">
           <h2 className="text-2xl font-bold text-center mb-4 gradient-text">Core Strengths</h2>
           <p className="text-center text-muted mb-10 max-w-xl mx-auto">Skills that go beyond code — qualities forged through perseverance</p>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -109,7 +108,7 @@ const Skills = () => {
               </li>
             ))}
           </ul>
-        </motion.div>
+        </div>
       </AnimatedSection>
     </div>
   );

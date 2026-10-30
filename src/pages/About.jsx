@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
@@ -55,15 +54,11 @@ const About = () => {
       <AnimatedSection title="My Story" titleAs="h1" subtitle="From adversity to achievement - a journey of resilience">
 
         {/* Hero Quote */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16 reveal">
           <p className="motivational-quote text-2xl md:text-3xl text-sky-light max-w-3xl mx-auto">
             "The body achieves what the mind believes."
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <AnimatedItem>
@@ -142,15 +137,9 @@ const About = () => {
                     className="text-center"
                   >
                     <span className="text-2xl mb-2 block" aria-hidden="true">{stat.icon}</span>
-                    <motion.span
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2 + index * 0.1 }}
-                      className="text-3xl font-bold gradient-text block mb-1"
-                      suppressHydrationWarning
-                    >
+                    <span className="text-3xl font-bold gradient-text block mb-1 reveal" suppressHydrationWarning>
                       {stat.value}
-                    </motion.span>
+                    </span>
                     <span className="text-muted text-sm">{stat.label}</span>
                   </GlassCard>
                 ))}
@@ -192,20 +181,12 @@ const About = () => {
 
         {/* Achievements & Personal Gallery */}
         <div className="mt-16">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-3xl font-bold text-center mb-4 gradient-text"
-          >
+          <h2 className="text-3xl font-bold text-center mb-4 gradient-text reveal">
             Achievements & Moments
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center text-muted mb-8 max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="text-center text-muted mb-8 max-w-2xl mx-auto reveal">
             Milestones that mark my journey of perseverance
-          </motion.p>
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -220,7 +201,7 @@ const About = () => {
                     <span className="text-xl" aria-hidden="true">{item.icon}</span>
                     <h3 className="font-semibold text-sky-light">{item.title}</h3>
                   </div>
-                  <ZoomButton title={item.title} onClick={() => setZoomedImage(item)} className="bg-white/5">
+                  <ZoomButton title={item.title} onClick={() => setZoomedImage(item)} preload={item.full} className="bg-white/5">
                     <img
                       src={item.src}
                       alt={item.title}
@@ -256,20 +237,12 @@ const About = () => {
 
         {/* Timeline - My Journey */}
         <div className="mt-20">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-3xl font-bold text-center mb-4 gradient-text"
-          >
+          <h2 className="text-3xl font-bold text-center mb-4 gradient-text reveal">
             My Journey
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center text-muted mb-12 max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="text-center text-muted mb-12 max-w-2xl mx-auto reveal">
             From challenge to triumph — the milestones that shaped who I am today
-          </motion.p>
+          </p>
 
           {/* One column on phones (line on the left), alternating on larger screens */}
           <div className="relative">
@@ -277,14 +250,7 @@ const About = () => {
 
             <div className="space-y-12">
               {timeline.map((item, index) => (
-                <motion.div
-                  key={item.year}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-                >
+                <div key={item.year} className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} reveal`}>
                   <div
                     className={`w-full pl-10 md:w-1/2 ${
                       index % 2 === 0 ? 'md:pl-0 md:pr-12 md:text-right' : 'md:pl-12 md:text-left'
@@ -315,7 +281,7 @@ const About = () => {
                     />
                   </div>
                   <div className="hidden md:block md:w-1/2" />
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -323,20 +289,12 @@ const About = () => {
 
         {/* Rehabilitation Journey Videos */}
         <div className="mt-20">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-3xl font-bold text-center mb-4 gradient-text"
-          >
+          <h2 className="text-3xl font-bold text-center mb-4 gradient-text reveal">
             My Rehabilitation Journey
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center text-muted mb-12 max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="text-center text-muted mb-12 max-w-2xl mx-auto reveal">
             Videos documenting my path to recovery — every step a victory
-          </motion.p>
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
@@ -362,11 +320,7 @@ const About = () => {
         </div>
 
         {/* Bottom Motivation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="mt-20 text-center"
-        >
+        <div className="mt-20 text-center reveal">
           <GlassCard className="inline-block max-w-2xl">
             <p className="motivational-quote text-xl text-sky-light mb-4">
               "My story isn't just about surviving — it's about thriving, innovating, and proving that
@@ -374,7 +328,7 @@ const About = () => {
             </p>
             <p className="text-coral font-medium">— Hagop Hadjiakian</p>
           </GlassCard>
-        </motion.div>
+        </div>
       </AnimatedSection>
 
       <Lightbox image={zoomedImage} onClose={closeZoom} />

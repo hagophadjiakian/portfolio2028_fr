@@ -1,5 +1,41 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Start downloading the large version of an image (used when the visitor
+// points at or touches a thumbnail, so the viewer opens with it ready).
+const preloaded = new Set();
+export const preloadImage = (src) => {
+  if (!src || preloaded.has(src) || typeof Image === 'undefined') return;
+  preloaded.add(src);
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = src;
+};
+
+// Shows the thumbnail (already downloaded for the page) immediately, and swaps
+// in the large version as soon as it has loaded.
+const ViewerImage = ({ image }) => {
+  const large = image.full || image.src;
+  const [largeReady, setLargeReady] = useState(large === image.src);
+  const imgClass = 'w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl';
+  return (
+    <>
+      {!largeReady && <img src={image.src} alt="" aria-hidden="true" className={imgClass} />}
+      <img
+        src={large}
+        alt={image.title}
+        onLoad={() => setLargeReady(true)}
+        className={largeReady ? imgClass : 'hidden'}
+      />
+      {!largeReady && (
+        <span
+          className="absolute bottom-3 left-3 w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin"
+          aria-hidden="true"
+        />
+      )}
+    </>
+  );
+};
 
 // Full-screen image viewer used on My Story and Projects.
 // Closes with Escape, the X button or a click outside; focus moves to the
@@ -62,7 +98,7 @@ const Lightbox = ({ image, onClose }) => {
             </div>
 
             <div className="flex-1 flex items-center justify-center overflow-hidden relative">
-              <img src={image.full || image.src} alt={image.title} className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+              <ViewerImage key={image.full || image.src} image={image} />
               <button
                 ref={closeRef}
                 type="button"
@@ -85,10 +121,13 @@ const Lightbox = ({ image, onClose }) => {
 };
 
 // Thumbnail that opens the lightbox; a real button so it works with the keyboard.
-export const ZoomButton = ({ onClick, title, children, className = '' }) => (
+export const ZoomButton = ({ onClick, title, children, className = '', preload }) => (
   <button
     type="button"
     onClick={onClick}
+    onPointerEnter={() => preloadImage(preload)}
+    onFocus={() => preloadImage(preload)}
+    onTouchStart={() => preloadImage(preload)}
     className={`block w-full text-left rounded-lg overflow-hidden cursor-zoom-in relative group ${className}`}
     aria-label={`Enlarge image: ${title}`}
   >

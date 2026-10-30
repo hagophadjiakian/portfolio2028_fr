@@ -46,19 +46,12 @@ const Home = () => {
       {/* Warm gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary via-secondary to-primary opacity-90" />
 
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        {/* Survivor Badge */}
-        <div className="inline-block survivor-badge mb-5 animate-fade-up">
-          <span className="text-coral font-medium flex items-center gap-2 text-sm md:text-base">
-            <span className="text-hope" aria-hidden="true">✦</span>
-            SCI Survivor Since 2013
-            <span className="text-hope" aria-hidden="true">✦</span>
-          </span>
-        </div>
-
+      {/* Phones and tablets: one centred column with the photo on top.
+          Large screens: text on the left, a big photo on the right. */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center lg:text-left lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-16">
         {/* Profile photo (pre-cropped to the part shown in the frame) */}
-        <div className="mb-5 animate-fade-up [animation-delay:100ms]">
-          <div className="mx-auto w-32 h-44 sm:w-36 sm:h-48 lg:w-40 lg:h-56 [@media(max-height:820px)]:w-28 [@media(max-height:820px)]:h-36 rounded-3xl bg-gradient-to-br from-coral to-sky p-1 shadow-lg">
+        <div className="mb-4 sm:mb-5 lg:mb-0 lg:order-2 animate-fade-up [animation-delay:100ms]">
+          <div className="mx-auto w-44 h-60 [@media(max-width:639px)_and_(max-height:700px)]:w-32 [@media(max-width:639px)_and_(max-height:700px)]:h-44 sm:w-52 sm:h-72 lg:w-80 lg:h-[28rem] [@media(min-width:1024px)_and_(max-height:820px)]:w-72 [@media(min-width:1024px)_and_(max-height:820px)]:h-[25rem] rounded-3xl bg-gradient-to-br from-coral to-sky p-1 shadow-lg">
             <img
               src="/assets/images/survivor-hero.webp"
               alt="Portrait of Hagop Hadjiakian"
@@ -70,60 +63,72 @@ const Home = () => {
           </div>
         </div>
 
-        <p className="text-sky text-lg mb-2 font-serif animate-fade-up [animation-delay:200ms]">Hello, I'm</p>
+        <div className="lg:order-1">
+          {/* Survivor Badge */}
+          <div className="inline-block survivor-badge mb-3 sm:mb-5 animate-fade-up">
+            <span className="text-coral font-medium flex items-center gap-2 text-sm md:text-base">
+              <span className="text-hope" aria-hidden="true">✦</span>
+              SCI Survivor Since 2013
+              <span className="text-hope" aria-hidden="true">✦</span>
+            </span>
+          </div>
 
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl [@media(min-width:640px)_and_(max-height:820px)]:text-6xl font-bold leading-tight mb-4 animate-pop-in">
-          <span className="gradient-text">Hagop</span>{' '}
-          <br />
-          <span className="text-white">Hadjiakian</span>
-        </h1>
+          <p className="text-sky text-lg mb-2 font-serif animate-fade-up [animation-delay:200ms]">Hello, I'm</p>
 
-        <p className="text-lg md:text-xl text-muted mb-4 animate-fade-up [animation-delay:300ms]">
-          {/* Screen readers get the full line at once instead of the typing effect */}
-          <span className="sr-only">{fullText}</span>
-          <span className="font-mono" aria-hidden="true">
-            {fullText.slice(0, typed)}
-            <span className="animate-pulse text-coral">|</span>
-            <span className="typing-rest invisible">{fullText.slice(typed)}</span>
-          </span>
-        </p>
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl [@media(min-width:640px)_and_(max-height:820px)]:text-6xl font-bold leading-tight mb-3 sm:mb-4 animate-pop-in">
+            <span className="gradient-text">Hagop</span>{' '}
+            <br />
+            <span className="text-white">Hadjiakian</span>
+          </h1>
 
-        {/* Rotating quote: all quotes share one grid cell, so the block keeps the
-            height of the longest quote and the buttons below never jump. */}
-        <div className="grid max-w-2xl mx-auto mb-6 animate-fade-up [animation-delay:400ms]">
-          {motivationalQuotes.map((quote, i) => (
-            <p
-              key={quote}
-              aria-hidden={i !== quoteIndex || undefined}
-              className={`col-start-1 row-start-1 motivational-quote text-lg md:text-xl text-sky-light transition-opacity duration-700 ${
-                i === quoteIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              "{quote}"
-            </p>
-          ))}
+          <p className="text-lg md:text-xl text-muted mb-3 sm:mb-4 animate-fade-up [animation-delay:300ms]">
+            {/* Screen readers get the full line at once instead of the typing effect */}
+            <span className="sr-only">{fullText}</span>
+            <span className="font-mono" aria-hidden="true">
+              {fullText.slice(0, typed)}
+              <span className="animate-pulse text-coral">|</span>
+              <span className="typing-rest invisible">{fullText.slice(typed)}</span>
+            </span>
+          </p>
+
+          {/* Rotating quote: all quotes share one grid cell, so the block keeps the
+              height of the longest quote and the buttons below never jump. */}
+          <div className="grid max-w-2xl mx-auto lg:mx-0 mb-5 sm:mb-6 animate-fade-up [animation-delay:400ms]">
+            {motivationalQuotes.map((quote, i) => (
+              <p
+                key={quote}
+                aria-hidden={i !== quoteIndex || undefined}
+                className={`col-start-1 row-start-1 motivational-quote text-lg md:text-xl text-sky-light transition-opacity duration-700 ${
+                  i === quoteIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                "{quote}"
+              </p>
+            ))}
+          </div>
+
+          {/* Side by side when they fit (saves height on phones) */}
+          <div className="flex flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start items-center animate-fade-up [animation-delay:500ms]">
+            <Link to="/about" className="btn-primary inline-block">
+              My Journey
+            </Link>
+            <Link to="/projects" className="btn-secondary inline-block">
+              View Projects
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <dl className="mt-10 flex flex-wrap justify-center lg:justify-start gap-8 animate-fade-up [animation-delay:600ms]">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center flex flex-col-reverse">
+                <dt className="text-muted text-sm mt-1">{stat.label}</dt>
+                <dd className="text-3xl md:text-4xl font-bold gradient-text" suppressHydrationWarning>
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center animate-fade-up [animation-delay:500ms]">
-          <Link to="/about" className="btn-primary inline-block">
-            My Journey
-          </Link>
-          <Link to="/projects" className="btn-secondary inline-block">
-            View Projects
-          </Link>
-        </div>
-
-        {/* Stats */}
-        <dl className="mt-10 flex flex-wrap justify-center gap-8 animate-fade-up [animation-delay:600ms]">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center flex flex-col-reverse">
-              <dt className="text-muted text-sm mt-1">{stat.label}</dt>
-              <dd className="text-3xl md:text-4xl font-bold gradient-text" suppressHydrationWarning>
-                {stat.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </div>
 
       {/* Background Gradient Orbs */}

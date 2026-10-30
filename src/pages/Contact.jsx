@@ -6,6 +6,9 @@ import { PROFILE, LINKS } from '../data/site';
 import SocialIcon from '../components/SocialIcon';
 import { SocialIconRow, CvButton, externalProps } from '../components/SocialLinks';
 
+// NeurolinkUp is not listed on this page
+const CONTACT_LINKS = LINKS.filter((link) => link.name !== 'NeurolinkUp');
+
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState({});
@@ -60,15 +63,11 @@ ${formData.message}`;
       <AnimatedSection title="Let's Connect" titleAs="h1" subtitle="Have a project in mind? Want to share your story? Reach out!">
 
         {/* Motivational intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
             "Together, we can turn challenges into opportunities."
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
@@ -168,15 +167,8 @@ ${formData.message}`;
                   Find Me Online
                 </h2>
                 <ul className="space-y-5">
-                  {LINKS.map((link, index) => (
-                    <motion.li
-                      key={link.name}
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.08 }}
-                      className="flex items-center gap-4"
-                    >
+                  {CONTACT_LINKS.map((link) => (
+                    <li key={link.name} className="flex items-center gap-4 reveal">
                       <span className="w-10 h-10 rounded-full glass flex items-center justify-center text-sky-light shrink-0">
                         <SocialIcon name={link.icon} className="w-5 h-5" />
                       </span>
@@ -190,7 +182,7 @@ ${formData.message}`;
                           {link.handle}
                         </a>
                       </div>
-                    </motion.li>
+                    </li>
                   ))}
                   <li className="flex items-center gap-4">
                     <span className="w-10 h-10 rounded-full glass flex items-center justify-center shrink-0" aria-hidden="true">
@@ -216,7 +208,7 @@ ${formData.message}`;
                   or collaborate on projects that make a difference — I'm here to listen.
                 </p>
                 <SocialIconRow
-                  only={['Email', 'GitHub', 'LinkedIn', 'NeurolinkUp']}
+                  only={['Email', 'GitHub', 'LinkedIn']}
                   linkClassName="p-3 glass rounded-lg text-sky-light hover:text-coral hover:bg-coral/10 transition-colors"
                   iconClassName="w-6 h-6"
                 />

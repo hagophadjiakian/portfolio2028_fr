@@ -28,15 +28,17 @@ export const LINKS = [
 
 export const isExternal = (href) => !href.startsWith('mailto:');
 
-// Background music, one short loop per page. Files live in /public/audio.
+// Background music, one short loop per page. Files live in /public/audio, each
+// in two formats: <name>.webm (Opus, smaller) and <name>.mp3 (for browsers
+// without Opus). The player picks the right one, so list names without extension.
 export const AUDIO_TRACKS = {
-  '/': '/audio/home.mp3',
-  '/about': '/audio/about.mp3',
-  '/projects': '/audio/projects.mp3',
-  '/skills': '/audio/skills.mp3',
-  '/experience': '/audio/experience.mp3',
-  '/videos': '/audio/projects.mp3',
-  '/contact': '/audio/home.mp3',
+  '/': '/audio/home',
+  '/about': '/audio/about',
+  '/projects': '/audio/projects',
+  '/skills': '/audio/skills',
+  '/experience': '/audio/experience',
+  '/videos': '/audio/projects',
+  '/contact': '/audio/home',
 };
 
 export const trackFor = (pathname) => AUDIO_TRACKS[pathname] || AUDIO_TRACKS['/'];

@@ -5,6 +5,22 @@ import { useAudio } from '../context/AudioContext';
 const EMBED_ORIGIN = 'https://www.youtube-nocookie.com';
 const YT_ORIGINS = ['https://www.youtube-nocookie.com', 'https://www.youtube.com'];
 
+// Open the connections the YouTube player needs as soon as the visitor shows
+// intent (pointer over, focus or touch on a video), so it starts faster when
+// they press play. Done once per page visit.
+const WARM_ORIGINS = [EMBED_ORIGIN, 'https://www.youtube.com', 'https://www.google.com'];
+let warmedUp = false;
+const warmConnections = () => {
+  if (warmedUp || typeof document === 'undefined') return;
+  warmedUp = true;
+  for (const href of WARM_ORIGINS) {
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+};
+
 // Track active video globally
 let setActiveCallbacks = new Set();
 
@@ -17,6 +33,15 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
   const [isLoading, setIsLoading] = useState(false);
   const iframeRef = useRef(null);
   const { pauseForVideo, resumeAfterVideo } = useAudio();
+
+  // If the visitor leaves the page while this video plays, let the music resume
+  const playingRef = useRef(false);
+  const resumeRef = useRef(resumeAfterVideo);
+  playingRef.current = isPlaying;
+  resumeRef.current = resumeAfterVideo;
+  useEffect(() => () => {
+    if (playingRef.current) resumeRef.current();
+  }, []);
 
   // Subscribe to global active video changes
   useEffect(() => {
@@ -128,13 +153,16 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
         type="button"
         className={`aspect-video bg-black relative cursor-pointer group w-full block ${className}`}
         onClick={handlePlay}
+        onPointerEnter={warmConnections}
+        onFocus={warmConnections}
+        onTouchStart={warmConnections}
         aria-label={`Play video: ${title}`}
         style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
       >
-        {/* Use smaller thumbnail (mqdefault) for faster mobile loading, upgrade to hqdefault on load */}
+        {/* Small thumbnail (mqdefault) on phones, larger (hqdefault) on bigger screens */}
         <img
-          src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-          srcSet={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg 320w, https://img.youtube.com/vi/${videoId}/hqdefault.jpg 480w`}
+          src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
+          srcSet={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg 320w, https://i.ytimg.com/vi/${videoId}/hqdefault.jpg 480w`}
           sizes="(max-width: 640px) 320px, 480px"
           alt=""
           className="w-full h-full object-cover pointer-events-none select-none"
@@ -155,9 +183,18 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
   // Show iframe when playing
   return (
     <div className={`aspect-video bg-black relative ${className}`}>
+      {/* While YouTube's player loads, keep the thumbnail on screen with a spinner */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
-          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+        <div className="absolute inset-0 z-10" aria-hidden="true">
+          <img
+            src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
+            alt=""
+            className="w-full h-full object-cover"
+            draggable="false"
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+          </div>
         </div>
       )}
 
@@ -176,7 +213,7 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
       <iframe
         ref={iframeRef}
         className="w-full h-full"
-        src={`${EMBED_ORIGIN}/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&widgetid=1&origin=${encodeURIComponent(window.location.origin)}`}
+        src={`${EMBED_ORIGIN}/embed/${videoId}?autoplay=1&playsinline=1&enablejsapi=1&rel=0&modestbranding=1&widgetid=1&origin=${encodeURIComponent(window.location.origin)}`}
         title={title}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

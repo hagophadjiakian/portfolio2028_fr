@@ -1,6 +1,9 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
+// Card used across the site. It is visible as soon as the page arrives (no
+// waiting for JavaScript); the lift-on-hover effect is plain CSS.
+// `delay` is accepted for backwards compatibility but no longer used.
+// eslint-disable-next-line no-unused-vars
 const GlassCard = ({ children, className = '', hover = true, glow = false, glowColor = 'coral', delay = 0, ...props }) => {
   const glowStyles = {
     coral: 'hover:shadow-[0_0_30px_rgba(247,108,108,0.4)]',
@@ -12,22 +15,17 @@ const GlassCard = ({ children, className = '', hover = true, glow = false, glowC
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, delay }}
-      whileHover={hover ? { scale: 1.02, y: -5 } : {}}
+    <div
       className={`
         glass-card p-6 transition-all duration-300
         ${glow ? glowStyles[glowColor] : ''}
-        ${hover ? 'hover:border-white/20' : ''}
+        ${hover ? 'hover:border-white/20 motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.02]' : ''}
         ${className}
       `}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 

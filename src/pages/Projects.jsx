@@ -1,50 +1,17 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useCallback } from 'react';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
 import Lightbox, { ZoomButton } from '../components/Lightbox';
 
-// Image component with loading state and WebP support
-const ProjectImage = ({ src, alt, className }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const imgRef = useRef(null);
-
-  // Generate WebP source from jpg path
-  const webpSrc = src.replace('.jpg', '.webp');
-
-  // The page is prerendered, so the image may finish loading before React
-  // attaches onLoad. Check once on mount so it never stays hidden.
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img?.complete && img.naturalWidth > 0) setIsLoaded(true);
-  }, []);
-
-  return (
-    <div className="relative w-full h-48 bg-white/5 rounded-lg overflow-hidden">
-      {/* Loading skeleton */}
-      {!isLoaded && !isError && (
-        <div className="js-skeleton absolute inset-0 flex items-center justify-center">
-          <div className="animate-pulse w-full h-full bg-gradient-to-r from-white/5 via-white/10 to-white/5" />
-        </div>
-      )}
-      <picture>
-        <source srcSet={webpSrc} type="image/webp" />
-        <img
-          ref={imgRef}
-          src={src}
-          alt={alt}
-          className={`js-fade w-full h-48 object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
-          loading="lazy"
-          decoding="async"
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setIsError(true)}
-        />
-      </picture>
-    </div>
-  );
-};
+// Project photo with a loading placeholder underneath. It needs no JavaScript:
+// the placeholder simply shows until the photo arrives and covers it.
+const ProjectImage = ({ src, alt, className }) => (
+  <div className="relative w-full h-48 bg-white/5 rounded-lg overflow-hidden">
+    <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-white/5 via-white/10 to-white/5" aria-hidden="true" />
+    <img src={src} alt={alt} className={`relative w-full h-48 object-cover ${className}`} loading="lazy" decoding="async" />
+  </div>
+);
 
 const Projects = () => {
   const [zoomedImage, setZoomedImage] = useState(null);
@@ -58,9 +25,11 @@ const Projects = () => {
   ];
 
   const project1Images = [
-    { src: '/assets/images/projectposter.jpg', title: 'Project Poster', icon: '📋' },
-    { src: '/assets/images/exo2.jpg', title: 'Exoskeleton Design', icon: '🦿' },
-    { src: '/assets/images/book.jpg', title: 'Research & Documentation', icon: '📖' },
+    // The same file is used for the card and the full-screen viewer, so the
+    // viewer opens instantly
+    { src: '/assets/images/projectposter.webp', title: 'Project Poster', icon: '📋' },
+    { src: '/assets/images/exo2.webp', title: 'Exoskeleton Design', icon: '🦿' },
+    { src: '/assets/images/book.webp', title: 'Research & Documentation', icon: '📖' },
   ];
 
   const project3Videos = [
@@ -74,27 +43,19 @@ const Projects = () => {
       <AnimatedSection title="My Projects" titleAs="h1" subtitle="Turning challenges into innovations — technology with purpose">
 
         {/* Motivational intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
             "Every project is a step toward making the impossible possible."
           </p>
-        </motion.div>
+        </div>
 
         {/* ==================== PROJECT 1 ==================== */}
         <div className="mb-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="flex items-center justify-center gap-3 mb-6"
-          >
+          <div className="flex items-center justify-center gap-3 mb-6 reveal">
             <div className="h-px bg-gradient-to-r from-transparent via-coral to-transparent flex-1 max-w-32" />
             <span className="text-coral font-mono text-sm">PROJECT 01</span>
             <div className="h-px bg-gradient-to-r from-transparent via-coral to-transparent flex-1 max-w-32" />
-          </motion.div>
+          </div>
         </div>
 
         {/* Project 1 - Featured Card */}
@@ -151,20 +112,12 @@ const Projects = () => {
 
         {/* Project 1 - Videos */}
         <div className="mb-12">
-          <motion.h3
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-2xl font-bold text-center mb-4 text-sky-light"
-          >
+          <h3 className="text-2xl font-bold text-center mb-4 text-sky-light reveal">
             Project Videos
-          </motion.h3>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center text-muted mb-8 max-w-2xl mx-auto"
-          >
+          </h3>
+          <p className="text-center text-muted mb-8 max-w-2xl mx-auto reveal">
             Watch the exoskeleton and EMG system in action
-          </motion.p>
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {project1Videos.map((video, index) => (
@@ -185,20 +138,12 @@ const Projects = () => {
 
         {/* Project 1 - Gallery */}
         <div className="mb-20">
-          <motion.h3
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-2xl font-bold text-center mb-4 text-sky-light"
-          >
+          <h3 className="text-2xl font-bold text-center mb-4 text-sky-light reveal">
             Project Gallery
-          </motion.h3>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center text-muted mb-8 max-w-2xl mx-auto"
-          >
+          </h3>
+          <p className="text-center text-muted mb-8 max-w-2xl mx-auto reveal">
             Documentation and design of the exoskeleton project
-          </motion.p>
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {project1Images.map((item, index) => (
@@ -223,15 +168,11 @@ const Projects = () => {
 
         {/* ==================== PROJECT 2 ==================== */}
         <div className="mb-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="flex items-center justify-center gap-3 mb-6"
-          >
+          <div className="flex items-center justify-center gap-3 mb-6 reveal">
             <div className="h-px bg-gradient-to-r from-transparent via-sky to-transparent flex-1 max-w-32" />
             <span className="text-sky font-mono text-sm">PROJECT 02</span>
             <div className="h-px bg-gradient-to-r from-transparent via-sky to-transparent flex-1 max-w-32" />
-          </motion.div>
+          </div>
         </div>
 
         {/* Project 2 - EMG Controlled Motor */}
@@ -308,15 +249,11 @@ const Projects = () => {
 
         {/* ==================== PROJECT 3 ==================== */}
         <div className="mb-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="flex items-center justify-center gap-3 mb-6"
-          >
+          <div className="flex items-center justify-center gap-3 mb-6 reveal">
             <div className="h-px bg-gradient-to-r from-transparent via-hope to-transparent flex-1 max-w-32" />
             <span className="text-hope font-mono text-sm">PROJECT 03</span>
             <div className="h-px bg-gradient-to-r from-transparent via-hope to-transparent flex-1 max-w-32" />
-          </motion.div>
+          </div>
         </div>
 
         {/* Project 3 - Homemade Rehabilitation Devices */}
@@ -386,20 +323,12 @@ const Projects = () => {
 
         {/* Project 3 - Videos */}
         <div className="mb-16">
-          <motion.h3
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-2xl font-bold text-center mb-4 text-sky-light"
-          >
+          <h3 className="text-2xl font-bold text-center mb-4 text-sky-light reveal">
             Rehabilitation Device Videos
-          </motion.h3>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-center text-muted mb-8 max-w-2xl mx-auto"
-          >
+          </h3>
+          <p className="text-center text-muted mb-8 max-w-2xl mx-auto reveal">
             See the DIY rehabilitation devices in action
-          </motion.p>
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {project3Videos.map((video, index) => (
@@ -419,11 +348,7 @@ const Projects = () => {
         </div>
 
         {/* Bottom Motivation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
+        <div className="text-center reveal">
           <GlassCard className="inline-block max-w-2xl">
             <p className="motivational-quote text-xl text-sky-light mb-4">
               "These projects represent my commitment to creating technology that serves humanity —
@@ -431,7 +356,7 @@ const Projects = () => {
             </p>
             <p className="text-coral font-medium">— Hagop Hadjiakian</p>
           </GlassCard>
-        </motion.div>
+        </div>
       </AnimatedSection>
 
       <Lightbox image={zoomedImage} onClose={closeZoom} />

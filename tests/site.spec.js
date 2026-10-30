@@ -113,7 +113,8 @@ test.describe('home page', () => {
 
     await page.getByRole('button', { name: 'Play background music' }).click();
     await expect.poll(() => audio.length).toBeGreaterThan(0);
-    expect([...new Set(audio)]).toEqual(['home.mp3']);
+    // Opus where supported (Chromium), MP3 elsewhere — one file either way
+    expect([...new Set(audio)]).toEqual(['home.webm']);
   });
 });
 
@@ -157,7 +158,7 @@ test.describe('keyboard', () => {
     await expect(dialog).toBeVisible();
     const close = page.getByRole('button', { name: 'Close image' });
     await expect(close).toBeFocused();
-    await expect(dialog.locator('img')).toHaveAttribute('src', /deans-1600\.webp$/);
+    await expect(dialog.getByRole('img', { name: "Dean's List Recognition" })).toHaveAttribute('src', /deans-1600\.webp$/);
     await page.keyboard.press('Tab');
     await expect(close).toBeFocused();
 
@@ -165,6 +166,49 @@ test.describe('keyboard', () => {
     await expect(dialog).toBeHidden();
     await expect(thumb).toBeFocused();
   });
+});
+
+test.describe('before JavaScript has loaded', () => {
+  // Animations on, so the CSS fade-in on scroll is exercised too
+  test.use({ javaScriptEnabled: false, reducedMotion: 'no-preference' });
+
+  test('cards and photos are visible straight away', async ({ page }) => {
+    for (const [path, card] of [['/about', "Dean's List Recognition"], ['/projects', 'Project Poster']]) {
+      await page.goto(path);
+      const heading = page.getByRole('heading', { name: card });
+      await heading.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await page.waitForTimeout(400);
+      // the card and everything around it must be fully opaque
+      const opacity = await heading.evaluate((el) => {
+        let o = 1;
+        for (let n = el; n; n = n.parentElement) o *= parseFloat(getComputedStyle(n).opacity);
+        return o;
+      });
+      expect(opacity, `${card} on ${path}`).toBeGreaterThan(0.99);
+      const img = page.getByRole('img', { name: card });
+      await expect(img).toBeVisible();
+      expect(await img.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    }
+  });
+});
+
+test('project gallery opens with the photo already shown', async ({ page }) => {
+  await page.goto('/projects');
+  const card = page.getByRole('img', { name: 'Project Poster' });
+  const cardSrc = await card.getAttribute('src');
+  await page.getByRole('button', { name: 'Enlarge image: Project Poster' }).click();
+  const shown = page.getByRole('dialog').getByRole('img', { name: 'Project Poster' });
+  // same file as the card, so it is already downloaded
+  await expect(shown).toHaveAttribute('src', cardSrc);
+  await expect(shown).toBeVisible();
+});
+
+test('contact page lists email, GitHub and LinkedIn but not NeurolinkUp', async ({ page }) => {
+  await page.goto('/contact');
+  const main = page.locator('main');
+  await expect(main.getByRole('link', { name: /linkedin/i }).first()).toBeVisible();
+  await expect(main.getByText('neurolinkup.com')).toHaveCount(0);
+  await expect(main.locator('a[href*="neurolinkup.com"]')).toHaveCount(0);
 });
 
 test.describe('accessibility (axe)', () => {

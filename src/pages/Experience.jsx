@@ -103,29 +103,18 @@ const Experience = () => {
       <AnimatedSection title="My Journey" titleAs="h1" subtitle="From challenge to triumph — every experience shaped who I am">
 
         {/* Motivational intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
             "Every setback is a setup for a comeback."
           </p>
-        </motion.div>
+        </div>
 
         <div className="relative">
           <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 w-1 h-full bg-gradient-to-b from-coral via-sky to-hope rounded-full" />
 
           <div className="space-y-12">
             {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`relative flex items-start ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:flex-row`}
-              >
+              <div key={exp.id} className={`relative flex items-start ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:flex-row reveal`}>
                 <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-12' : 'md:pl-12'} pl-8 md:pl-0`}>
                   {/* Clicking anywhere on the card toggles it; the arrow button at
                       the bottom is the keyboard / screen-reader control (its
@@ -216,13 +205,13 @@ const Experience = () => {
                 </div>
 
                 <div className="hidden md:block w-1/2" />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Education */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-24">
+        <div className="mt-24 reveal">
           <h2 className="text-3xl font-bold text-center mb-4 gradient-text">Education & Training</h2>
           <p className="text-center text-muted mb-12">Knowledge gained through perseverance</p>
 
@@ -243,21 +232,17 @@ const Experience = () => {
               </AnimatedItem>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Bottom motivation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="mt-20 text-center"
-        >
+        <div className="mt-20 text-center reveal">
           <GlassCard className="inline-block max-w-2xl">
             <p className="motivational-quote text-xl text-sky-light mb-4">
               "My journey proves that with determination, any obstacle can become a stepping stone."
             </p>
             <p className="text-coral font-medium">— Hagop Hadjiakian</p>
           </GlassCard>
-        </motion.div>
+        </div>
       </AnimatedSection>
     </div>
   );

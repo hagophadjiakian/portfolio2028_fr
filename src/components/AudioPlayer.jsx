@@ -1,32 +1,103 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAudio } from '../context/AudioContext';
 import { trackFor } from '../data/site';
 
+// Each track exists as Opus (.webm, about 750 KB) and MP3 (.mp3, about 940 KB).
+// Use the smaller Opus file wherever the browser can play it.
+const pickExtension = () => {
+  const probe = document.createElement('audio');
+  return probe.canPlayType('audio/webm; codecs="opus"') ? 'webm' : 'mp3';
+};
+
+// Gradual volume change (ignored on iPhone, where volume is hardware-only).
+const fadeTo = (audio, target, ms) =>
+  new Promise((resolve) => {
+    const from = audio.volume;
+    const start = performance.now();
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / ms);
+      audio.volume = Math.min(1, Math.max(0, from + (target - from) * t));
+      if (t < 1) requestAnimationFrame(step);
+      else resolve();
+    };
+    requestAnimationFrame(step);
+  });
+
+// How long to keep the current track playing while the next page's track
+// downloads, before switching anyway.
+const SWITCH_TIMEOUT_MS = 8000;
+
 // One small control in the bottom-right corner. Music starts only when the
 // visitor presses it, and only the current page's track is downloaded.
 const AudioPlayer = () => {
-  const { audioRef, musicOn, setMusicOn } = useAudio();
+  const { audioRef, musicOn, setMusicOn, pausedForVideo } = useAudio();
   const [volume, setVolume] = useState(0.3);
   const [isLoading, setIsLoading] = useState(false);
   const { pathname } = useLocation();
-  const track = trackFor(pathname);
+  const extension = useRef('mp3');
+  const volumeRef = useRef(volume);
+  const pendingSwitch = useRef(null);
+  const warmedUp = useRef(false);
+  const musicOnRef = useRef(musicOn);
+  musicOnRef.current = musicOn;
 
-  // Switch track on navigation, but only load it if music is on.
+  useEffect(() => {
+    extension.current = pickExtension();
+  }, []);
+
+  const urlFor = useCallback((path) => `${trackFor(path)}.${extension.current}`, []);
+
+  // Changing page. If music is off, just point at the new track (nothing
+  // downloads). If music is on, keep the current track playing while the next
+  // one downloads, then switch with a short fade — no silent gap.
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
-    if (!audio.src.endsWith(track)) {
-      audio.src = track;
-      if (musicOn) {
-        setIsLoading(true);
-        audio.play().catch(() => setMusicOn(false));
-      }
+    if (!audio) return undefined;
+    const next = urlFor(pathname);
+    if (audio.src.endsWith(next)) return undefined;
+
+    pendingSwitch.current?.abort();
+    pendingSwitch.current = null;
+
+    if (!musicOn) {
+      audio.preload = 'none'; // undo any warm-up, so nothing downloads
+      audio.src = next;
+      warmedUp.current = false;
+      return undefined;
     }
+
+    const controller = new AbortController();
+    pendingSwitch.current = controller;
+    const timer = setTimeout(() => controller.abort(), SWITCH_TIMEOUT_MS);
+
+    fetch(next, { signal: controller.signal })
+      .then((response) => response.blob()) // read it all, so it's in the browser cache
+      .catch(() => {})
+      .finally(async () => {
+        clearTimeout(timer);
+        // A newer page change replaced this one
+        if (pendingSwitch.current !== controller) return;
+        pendingSwitch.current = null;
+        if (!audio.paused) await fadeTo(audio, 0, 400);
+        audio.src = next;
+        // Music was turned off meanwhile, or a video is playing (music resumes after it)
+        if (!musicOnRef.current || pausedForVideo.current) return;
+        audio.volume = 0;
+        try {
+          await audio.play();
+          await fadeTo(audio, volumeRef.current, 800);
+        } catch {
+          setMusicOn(false);
+        }
+      });
+
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track]);
+  }, [pathname]);
 
   useEffect(() => {
+    volumeRef.current = volume;
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume, audioRef]);
 
@@ -36,22 +107,37 @@ const AudioPlayer = () => {
       const audio = audioRef.current;
       if (!audio || !musicOn) return;
       if (document.hidden) audio.pause();
-      else audio.play().catch(() => {});
+      else if (!pausedForVideo.current) audio.play().catch(() => {});
     };
     document.addEventListener('visibilitychange', onVisibility);
     return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [musicOn, audioRef]);
+  }, [musicOn, audioRef, pausedForVideo]);
+
+  // Start downloading when the visitor points at (or focuses, or touches) the
+  // button, so the music starts sooner when they press it.
+  const warmUp = () => {
+    const audio = audioRef.current;
+    if (!audio || musicOn || warmedUp.current) return;
+    warmedUp.current = true;
+    const next = urlFor(pathname);
+    if (!audio.src.endsWith(next)) audio.src = next;
+    audio.preload = 'auto';
+    audio.load();
+  };
 
   const toggleMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (musicOn) {
+      pendingSwitch.current?.abort();
+      pendingSwitch.current = null;
       audio.pause();
       setMusicOn(false);
       return;
     }
-    if (!audio.src.endsWith(track)) audio.src = track;
-    audio.volume = volume;
+    const next = urlFor(pathname);
+    if (!audio.src.endsWith(next)) audio.src = next;
+    audio.volume = volumeRef.current;
     setIsLoading(true);
     audio
       .play()
@@ -92,6 +178,9 @@ const AudioPlayer = () => {
         <button
           type="button"
           onClick={toggleMusic}
+          onPointerEnter={warmUp}
+          onFocus={warmUp}
+          onTouchStart={warmUp}
           aria-pressed={musicOn}
           aria-label={musicOn ? 'Pause background music' : 'Play background music'}
           title={musicOn ? 'Pause music' : 'Play music'}

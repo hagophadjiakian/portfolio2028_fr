@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
@@ -11,15 +10,11 @@ const Videos = () => {
       <AnimatedSection title="Videos" titleAs="h1" subtitle="Video records of my journey and projects">
 
         {/* Motivational intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
             "Every moment recorded is a step remembered."
           </p>
-        </motion.div>
+        </div>
 
         {/* Featured Video */}
         <div className="mb-16">
@@ -43,18 +38,14 @@ const Videos = () => {
         </div>
 
         {/* Bottom Motivation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
+        <div className="text-center reveal">
           <GlassCard className="inline-block max-w-2xl">
             <p className="motivational-quote text-xl text-sky-light mb-4">
               "Documentation is the bridge between experience and inspiration."
             </p>
             <p className="text-coral font-medium">— Hagop Hadjiakian</p>
           </GlassCard>
-        </motion.div>
+        </div>
       </AnimatedSection>
     </div>
   );

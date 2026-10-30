@@ -12,10 +12,12 @@ export const useAudio = () => {
 
 // Music is OFF until the visitor turns it on. Nothing is downloaded before that:
 // the <audio> element in AudioPlayer uses preload="none" and only loads the
-// current page's track when it is actually played.
+// current page's track when it is actually played (or when the visitor points
+// at the music button, to get a head start).
 export const AudioProvider = ({ children }) => {
   const audioRef = useRef(null);
   const [musicOn, setMusicOn] = useState(false);
+  // True while a video is playing and the music is paused for it
   const pausedForVideo = useRef(false);
 
   const pauseForVideo = useCallback(() => {
@@ -34,7 +36,7 @@ export const AudioProvider = ({ children }) => {
     pausedForVideo.current = false;
   }, [musicOn]);
 
-  const value = { audioRef, musicOn, setMusicOn, pauseForVideo, resumeAfterVideo };
+  const value = { audioRef, musicOn, setMusicOn, pauseForVideo, resumeAfterVideo, pausedForVideo };
 
   return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
 };
