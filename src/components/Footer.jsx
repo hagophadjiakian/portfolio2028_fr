@@ -10,8 +10,9 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <Link to="/" aria-label={`${PROFILE.name}, home`}>
+            <Link to="/">
               <span className="text-3xl font-bold gradient-text">HH</span>
+              <span className="sr-only"> – {PROFILE.name}, home</span>
             </Link>
             <p className="mt-4 text-muted text-sm">SCI Survivor since 2013</p>
             <p className="mt-2 motivational-quote text-sky-light text-sm">"The body achieves what the mind believes."</p>
@@ -41,7 +42,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-muted text-sm flex items-center gap-2">
+          <p className="text-muted text-sm flex items-center gap-2" suppressHydrationWarning>
             <span className="text-hope" aria-hidden="true">✦</span>© {new Date().getFullYear()} {PROFILE.name}
             <span className="text-hope" aria-hidden="true">✦</span>
           </p>

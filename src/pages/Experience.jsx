@@ -127,21 +127,14 @@ const Experience = () => {
                 className={`relative flex items-start ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:flex-row`}
               >
                 <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-12' : 'md:pl-12'} pl-8 md:pl-0`}>
+                  {/* Clicking anywhere on the card toggles it; the arrow button at
+                      the bottom is the keyboard / screen-reader control (its
+                      click bubbles up to this handler). */}
                   <GlassCard
                     glow
                     glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}
                     className="cursor-pointer"
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={expandedId === exp.id}
-                    aria-label={`${exp.role}, ${exp.company}. ${expandedId === exp.id ? 'Hide' : 'Show'} details`}
                     onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setExpandedId(expandedId === exp.id ? null : exp.id);
-                      }
-                    }}
                   >
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <span className="text-2xl" aria-hidden="true">{exp.icon}</span>
@@ -154,43 +147,60 @@ const Experience = () => {
                     <p className="text-muted text-sm mb-3">{exp.location}</p>
                     <p className="text-muted">{exp.description}</p>
 
-                    <AnimatePresence>
-                      {expandedId === exp.id && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-4 pt-4 border-t border-white/10">
-                            <h3 className="text-sm font-semibold mb-3">Key Achievements:</h3>
-                            <ul className="space-y-2 mb-4">
-                              {exp.responsibilities.map((resp, i) => (
-                                <li key={i} className="flex items-start text-muted text-sm">
-                                  <span className="w-1.5 h-1.5 bg-coral rounded-full mt-2 mr-3 flex-shrink-0" />
-                                  {resp}
-                                </li>
-                              ))}
-                            </ul>
+                    <div id={`experience-details-${exp.id}`}>
+                      <AnimatePresence>
+                        {expandedId === exp.id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-4 pt-4 border-t border-white/10">
+                              <h3 className="text-sm font-semibold mb-3">Key Achievements:</h3>
+                              <ul className="space-y-2 mb-4">
+                                {exp.responsibilities.map((resp, i) => (
+                                  <li key={i} className="flex items-start text-muted text-sm">
+                                    <span className="w-1.5 h-1.5 bg-coral rounded-full mt-2 mr-3 flex-shrink-0" />
+                                    {resp}
+                                  </li>
+                                ))}
+                              </ul>
 
-                            <h3 className="text-sm font-semibold mb-3">Technologies:</h3>
-                            <div className="flex flex-wrap gap-2">
-                              {exp.technologies.map((tech) => (
-                                <span key={tech} className="px-2 py-1 text-xs rounded-full bg-white/5 text-muted">
-                                  {tech}
-                                </span>
-                              ))}
+                              <h3 className="text-sm font-semibold mb-3">Technologies:</h3>
+                              <div className="flex flex-wrap gap-2">
+                                {exp.technologies.map((tech) => (
+                                  <span key={tech} className="px-2 py-1 text-xs rounded-full bg-white/5 text-muted">
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
-                    <motion.div animate={{ rotate: expandedId === exp.id ? 180 : 0 }} className="mt-4 flex justify-center" aria-hidden="true">
-                      <svg className="w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </motion.div>
+                    <div className="mt-3 flex justify-center">
+                      <button
+                        type="button"
+                        aria-expanded={expandedId === exp.id}
+                        aria-controls={`experience-details-${exp.id}`}
+                        aria-label={`${expandedId === exp.id ? 'Hide' : 'Show'} details: ${exp.role}`}
+                        className="p-2 rounded-full text-muted hover:text-white hover:bg-white/10 transition-colors"
+                      >
+                        <motion.svg
+                          animate={{ rotate: expandedId === exp.id ? 180 : 0 }}
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </motion.svg>
+                      </button>
+                    </div>
                   </GlassCard>
                 </div>
 
