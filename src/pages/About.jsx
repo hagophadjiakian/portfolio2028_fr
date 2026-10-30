@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
 import YouTubePlayer from '../components/YouTubePlayer';
+import { yearsSinceInjury, yearsInTech } from '../data/site';
 
 const About = () => {
   const [zoomedImage, setZoomedImage] = useState(null);
@@ -19,9 +20,9 @@ const About = () => {
   }, [zoomedImage]);
 
   const highlights = [
-    { label: 'Years Fighting', value: '11+', icon: '💪' },
+    { label: 'Years Fighting', value: `${yearsSinceInjury()}+`, icon: '💪' },
     { label: 'Languages Spoken', value: '4', icon: '🌍' },
-    { label: 'Years in Tech', value: '5+', icon: '💻' },
+    { label: 'Years in Tech', value: `${yearsInTech()}+`, icon: '💻' },
     { label: 'Never Give Up', value: '∞', icon: '✨' },
   ];
 
@@ -279,39 +280,50 @@ const About = () => {
             From challenge to triumph — the milestones that shaped who I am today
           </motion.p>
 
+          {/* One column on phones (line on the left), alternating on larger screens */}
           <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-coral via-sky to-hope rounded-full" />
+            <div className="absolute left-2 md:left-1/2 md:-translate-x-1/2 w-1 h-full bg-gradient-to-b from-coral via-sky to-hope rounded-full" />
 
             <div className="space-y-12">
               {timeline.map((item, index) => (
                 <motion.div
                   key={item.year}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
-                  className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
+                  className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
                 >
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-4 sm:pr-12 text-right' : 'pl-4 sm:pl-12 text-left'}`}>
+                  <div
+                    className={`w-full pl-10 md:w-1/2 ${
+                      index % 2 === 0 ? 'md:pl-0 md:pr-12 md:text-right' : 'md:pl-12 md:text-left'
+                    }`}
+                  >
                     <GlassCard hover={false} className={item.type === 'life' ? 'border-coral/30' : ''}>
-                      <div className="flex items-center gap-2 mb-2 flex-wrap" style={{ justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start' }}>
-                        <span className="text-2xl">{item.icon}</span>
+                      <div
+                        className={`flex items-center gap-2 mb-2 flex-wrap justify-start ${
+                          index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
+                        }`}
+                      >
+                        <span className="text-2xl" aria-hidden="true">{item.icon}</span>
                         <span className="text-coral font-mono text-sm">{item.year}</span>
                       </div>
                       <h4 className="text-base sm:text-xl font-semibold mt-2 break-words">{item.title}</h4>
                       <p className="text-muted mt-2 text-sm sm:text-base">{item.description}</p>
                     </GlassCard>
                   </div>
-                  <div className="relative z-10">
-                    <motion.div
-                      whileHover={{ scale: 1.2 }}
+                  <div className="absolute left-2 md:left-1/2 -translate-x-1/2 z-10 ml-0.5 md:ml-0">
+                    <div
                       className={`w-4 h-4 rounded-full ${
-                        item.type === 'life' ? 'bg-coral neon-glow-coral' :
-                        item.type === 'milestone' ? 'bg-hope neon-glow-hope' :
-                        'bg-sky neon-glow-sky'
+                        item.type === 'life'
+                          ? 'bg-coral neon-glow-coral'
+                          : item.type === 'milestone'
+                          ? 'bg-hope neon-glow-hope'
+                          : 'bg-sky neon-glow-sky'
                       }`}
                     />
                   </div>
-                  <div className="w-1/2" />
+                  <div className="hidden md:block md:w-1/2" />
                 </motion.div>
               ))}
             </div>

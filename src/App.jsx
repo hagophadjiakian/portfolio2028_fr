@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
@@ -19,14 +19,12 @@ import Documentation from './pages/Documentation';
 import Contact from './pages/Contact';
 
 function App() {
-  const [hasEntered, setHasEntered] = useState(false);
-
   return (
     <AudioProvider>
       <Router>
         <ScrollToTop />
         <div className="min-h-screen bg-primary relative">
-          <WelcomeOverlay onEnter={() => setHasEntered(true)} />
+          <WelcomeOverlay />
           <ParticleBackground />
           <Navbar />
           <main className="relative z-10">
@@ -43,7 +41,7 @@ function App() {
             </AnimatePresence>
           </main>
           <Footer />
-          {hasEntered && <AudioPlayer />}
+          <AudioPlayer />
         </div>
       </Router>
     </AudioProvider>

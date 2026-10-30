@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import { PROFILE } from '../data/site';
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
   const validateForm = () => {
@@ -28,6 +28,8 @@ const Contact = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
+  // The form has no server: it opens the visitor's email app with the message
+  // ready to send. The wording below says exactly that.
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
@@ -37,25 +39,17 @@ const Contact = () => {
       return;
     }
 
-    setIsSubmitting(true);
-
-    // Build email body
     const emailBody = `Name: ${formData.name}
 Email: ${formData.email}
-Subject: ${formData.subject}
 
-Message:
 ${formData.message}`;
 
-    // Create mailto link with subject "portfolio2028"
-    const mailtoLink = `mailto:hagophadjiakian@gmail.com?subject=${encodeURIComponent('portfolio2028')}&body=${encodeURIComponent(emailBody)}`;
+    const mailtoLink = `mailto:${PROFILE.email}?subject=${encodeURIComponent(
+      `Portfolio: ${formData.subject}`
+    )}&body=${encodeURIComponent(emailBody)}`;
 
-    // Open email client
     window.location.href = mailtoLink;
-
-    setSubmitStatus('success');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setIsSubmitting(false);
+    setSubmitStatus('opened');
   };
 
   const contactInfo = [
@@ -160,30 +154,30 @@ ${formData.message}`;
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-primary"
                 >
-                  {isSubmitting ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Sending...
-                    </span>
-                  ) : 'Send Message'}
+                  Open in my email app
                 </motion.button>
+                <p className="text-muted text-xs text-center">
+                  This opens your email app with the message ready. Press send there to deliver it.
+                </p>
               </form>
 
               <AnimatePresence>
-                {submitStatus && (
+                {submitStatus === 'opened' && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className={`mt-4 p-4 rounded-lg ${submitStatus === 'success' ? 'bg-hope/20 text-hope' : 'bg-red-500/20 text-red-400'}`}
+                    role="status"
+                    className="mt-4 p-4 rounded-lg bg-hope/20 text-hope text-sm"
                   >
-                    {submitStatus === 'success' ? "Message sent successfully! I'll get back to you soon." : 'Something went wrong. Please try again later.'}
+                    Your email app should now be open with your message. Press send there to deliver it. Nothing
+                    opened? Email me directly at{' '}
+                    <a href={`mailto:${PROFILE.email}`} className="underline">
+                      {PROFILE.email}
+                    </a>
+                    .
                   </motion.div>
                 )}
               </AnimatePresence>
