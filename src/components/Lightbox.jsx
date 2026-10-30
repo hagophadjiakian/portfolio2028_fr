@@ -62,7 +62,7 @@ const Lightbox = ({ image, onClose }) => {
             </div>
 
             <div className="flex-1 flex items-center justify-center overflow-hidden relative">
-              <img src={image.src} alt={image.title} className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+              <img src={image.full || image.src} alt={image.title} className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl" />
               <button
                 ref={closeRef}
                 type="button"

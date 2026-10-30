@@ -19,13 +19,9 @@ const AnimatedSection = ({ children, className = '', title, titleAs: TitleTag = 
     <section id={id} className={`py-20 px-4 sm:px-6 lg:px-8 ${className}`} {...props}>
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-16"
-          >
+          // Page header: CSS animation so it shows at first paint, before
+          // JavaScript has loaded (it is always at the top of the page).
+          <div className="text-center mb-16 animate-fade-down">
             {title && (
               <TitleTag className="text-4xl md:text-5xl font-bold mb-4">
                 <span className="gradient-text">{title}</span>
@@ -34,7 +30,7 @@ const AnimatedSection = ({ children, className = '', title, titleAs: TitleTag = 
             {subtitle && (
               <p className="text-muted text-lg max-w-2xl mx-auto">{subtitle}</p>
             )}
-          </motion.div>
+          </div>
         )}
         <motion.div
           variants={containerVariants}

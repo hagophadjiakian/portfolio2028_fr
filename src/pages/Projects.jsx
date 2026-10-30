@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
@@ -9,24 +9,33 @@ import Lightbox, { ZoomButton } from '../components/Lightbox';
 const ProjectImage = ({ src, alt, className }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+  const imgRef = useRef(null);
 
   // Generate WebP source from jpg path
   const webpSrc = src.replace('.jpg', '.webp');
+
+  // The page is prerendered, so the image may finish loading before React
+  // attaches onLoad. Check once on mount so it never stays hidden.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img?.complete && img.naturalWidth > 0) setIsLoaded(true);
+  }, []);
 
   return (
     <div className="relative w-full h-48 bg-white/5 rounded-lg overflow-hidden">
       {/* Loading skeleton */}
       {!isLoaded && !isError && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="js-skeleton absolute inset-0 flex items-center justify-center">
           <div className="animate-pulse w-full h-full bg-gradient-to-r from-white/5 via-white/10 to-white/5" />
         </div>
       )}
       <picture>
         <source srcSet={webpSrc} type="image/webp" />
         <img
+          ref={imgRef}
           src={src}
           alt={alt}
-          className={`w-full h-48 object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+          className={`js-fade w-full h-48 object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
           loading="lazy"
           decoding="async"
           onLoad={() => setIsLoaded(true)}

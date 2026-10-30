@@ -76,11 +76,11 @@ const About = () => {
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-coral to-sky p-1">
                     <img
-                      src="/assets/images/profilepic.jpg"
+                      src="/assets/images/profilepic-240.webp"
                       alt="Hagop Hadjiakian"
                       className="w-full h-full rounded-full object-cover"
-                      loading="eager"
-                      fetchpriority="high"
+                      width="237"
+                      height="240"
                     />
                   </div>
                   <div>
@@ -147,6 +147,7 @@ const About = () => {
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.2 + index * 0.1 }}
                       className="text-3xl font-bold gradient-text block mb-1"
+                      suppressHydrationWarning
                     >
                       {stat.value}
                     </motion.span>
@@ -208,9 +209,10 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { src: '/assets/images/diploma.jpg', title: 'Engineering Diploma', icon: '🎓', color: 'coral' },
-              { src: '/assets/images/deans.jpg', title: "Dean's List Recognition", icon: '🏆', color: 'hope' },
-              { src: '/assets/images/dog.jpeg', title: 'My Companion', icon: '🐕', color: 'sky' },
+              // src: small version for the card; full: large version for the lightbox
+              { src: '/assets/images/diploma.webp', title: 'Engineering Diploma', icon: '🎓', color: 'coral' },
+              { src: '/assets/images/deans-800.webp', full: '/assets/images/deans-1600.webp', title: "Dean's List Recognition", icon: '🏆', color: 'hope' },
+              { src: '/assets/images/dog-800.webp', full: '/assets/images/dog-1600.webp', title: 'My Companion', icon: '🐕', color: 'sky' },
             ].map((item) => (
               <AnimatedItem key={item.src}>
                 <GlassCard glow glowColor={item.color}>
@@ -224,6 +226,7 @@ const About = () => {
                       alt={item.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
+                      decoding="async"
                     />
                   </ZoomButton>
                 </GlassCard>

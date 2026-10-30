@@ -29,24 +29,23 @@ const Navbar = () => {
   }, [location]);
 
   return (
-    <motion.nav
+    <nav
       aria-label="Main"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-nav-in ${
         isScrolled ? 'glass py-4' : 'py-6'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link to="/" aria-label="Hagop Hadjiakian, home">
+          <Link to="/">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex items-center gap-2"
             >
               <span className="text-2xl font-bold gradient-text">HH</span>
               <span className="hidden sm:inline text-xs text-coral-light font-mono">SCI Survivor</span>
+              {/* Spoken name starts with the visible text (WCAG "label in name") */}
+              <span className="sr-only"> – Hagop Hadjiakian, home</span>
             </motion.div>
           </Link>
 
@@ -131,7 +130,7 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </div>
-    </motion.nav>
+    </nav>
   );
 };
 
