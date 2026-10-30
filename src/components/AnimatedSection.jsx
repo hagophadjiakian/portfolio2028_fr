@@ -1,49 +1,27 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
-
-const AnimatedSection = ({ children, className = '', title, subtitle, id, ...props }) => {
+// Page section with an optional header. Everything is visible as soon as the
+// page arrives — nothing waits for JavaScript. The header animates in with CSS
+// at first paint, and blocks wrapped in <AnimatedItem> fade in as they scroll
+// into view where the browser supports CSS scroll-driven animations (see
+// `.reveal` in index.css); other browsers simply show them.
+const AnimatedSection = ({ children, className = '', title, titleAs: TitleTag = 'h2', subtitle, id, ...props }) => {
   return (
     <section id={id} className={`py-20 px-4 sm:px-6 lg:px-8 ${className}`} {...props}>
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16 animate-fade-down">
             {title && (
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <TitleTag className="text-4xl md:text-5xl font-bold mb-4">
                 <span className="gradient-text">{title}</span>
-              </h2>
+              </TitleTag>
             )}
             {subtitle && (
               <p className="text-muted text-lg max-w-2xl mx-auto">{subtitle}</p>
             )}
-          </motion.div>
+          </div>
         )}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          {children}
-        </motion.div>
+        <div>{children}</div>
       </div>
     </section>
   );
@@ -51,9 +29,9 @@ const AnimatedSection = ({ children, className = '', title, subtitle, id, ...pro
 
 export const AnimatedItem = ({ children, className = '', ...props }) => {
   return (
-    <motion.div variants={itemVariants} className={className} {...props}>
+    <div className={`reveal ${className}`} {...props}>
       {children}
-    </motion.div>
+    </div>
   );
 };
 

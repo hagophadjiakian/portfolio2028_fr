@@ -1,17 +1,6 @@
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useRef, useState, useCallback } from 'react';
 
-const AudioContext = createContext();
-
-// Audio tracks for each page
-const audioTracks = {
-  '/': '/audio/home.mp3',
-  '/about': '/audio/about.mp3',
-  '/projects': '/audio/projects.mp3',
-  '/skills': '/audio/skills.mp3',
-  '/experience': '/audio/experience.mp3',
-  '/documentation': '/audio/projects.mp3',
-  '/contact': '/audio/contact.mp3',
-};
+const AudioContext = createContext(null);
 
 export const useAudio = () => {
   const context = useContext(AudioContext);
@@ -21,60 +10,33 @@ export const useAudio = () => {
   return context;
 };
 
+// Music is ON by default (see AudioPlayer for when it actually starts). The
+// <audio> element uses preload="none", so nothing downloads until it plays.
 export const AudioProvider = ({ children }) => {
   const audioRef = useRef(null);
-  const preloadedAudio = useRef({});
-  const [isMuted, setIsMuted] = useState(false);
-  const [wasPlayingBeforeVideo, setWasPlayingBeforeVideo] = useState(false);
-  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
-
-  // Preload all audio tracks immediately when app starts
-  useEffect(() => {
-    Object.values(audioTracks).forEach((trackUrl) => {
-      if (!preloadedAudio.current[trackUrl]) {
-        const audio = new Audio();
-        audio.preload = 'auto';
-        audio.src = trackUrl;
-        audio.load();
-        preloadedAudio.current[trackUrl] = audio;
-      }
-    });
-  }, []);
+  const [musicOn, setMusicOn] = useState(true);
+  // True while a video is playing and the music is paused for it
+  const pausedForVideo = useRef(false);
 
   const pauseForVideo = useCallback(() => {
-    if (audioRef.current && !audioRef.current.paused) {
-      setWasPlayingBeforeVideo(true);
-      audioRef.current.pause();
+    const audio = audioRef.current;
+    if (audio && !audio.paused) {
+      pausedForVideo.current = true;
+      audio.pause();
     }
   }, []);
 
   const resumeAfterVideo = useCallback(() => {
-    if (audioRef.current && wasPlayingBeforeVideo && !isMuted) {
-      audioRef.current.play().catch(() => {});
-      setWasPlayingBeforeVideo(false);
+    const audio = audioRef.current;
+    if (audio && pausedForVideo.current && musicOn) {
+      audio.play().catch(() => {});
     }
-  }, [wasPlayingBeforeVideo, isMuted]);
+    pausedForVideo.current = false;
+  }, [musicOn]);
 
-  const triggerPlay = useCallback(() => {
-    setShouldAutoPlay(true);
-  }, []);
+  const value = { audioRef, musicOn, setMusicOn, pauseForVideo, resumeAfterVideo, pausedForVideo };
 
-  const value = {
-    audioRef,
-    preloadedAudio,
-    isMuted,
-    setIsMuted,
-    pauseForVideo,
-    resumeAfterVideo,
-    shouldAutoPlay,
-    triggerPlay,
-  };
-
-  return (
-    <AudioContext.Provider value={value}>
-      {children}
-    </AudioContext.Provider>
-  );
+  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
 };
 
 export default AudioContext;

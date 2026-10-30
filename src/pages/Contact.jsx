@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection, { AnimatedItem } from '../components/AnimatedSection';
 import GlassCard from '../components/GlassCard';
+import { PROFILE, LINKS } from '../data/site';
+import SocialIcon from '../components/SocialIcon';
+import { SocialIconRow, CvButton, externalProps } from '../components/SocialLinks';
+
+// NeurolinkUp is not listed on this page
+const CONTACT_LINKS = LINKS.filter((link) => link.name !== 'NeurolinkUp');
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
   const validateForm = () => {
@@ -28,6 +33,8 @@ const Contact = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
+  // The form has no server: it opens the visitor's email app with the message
+  // ready to send. The wording below says exactly that.
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
@@ -37,85 +44,41 @@ const Contact = () => {
       return;
     }
 
-    setIsSubmitting(true);
-
-    // Build email body
     const emailBody = `Name: ${formData.name}
 Email: ${formData.email}
-Subject: ${formData.subject}
 
-Message:
 ${formData.message}`;
 
-    // Create mailto link with subject "portfolio2028"
-    const mailtoLink = `mailto:hagophadjiakian@gmail.com?subject=${encodeURIComponent('portfolio2028')}&body=${encodeURIComponent(emailBody)}`;
+    const mailtoLink = `mailto:${PROFILE.email}?subject=${encodeURIComponent(
+      `Portfolio: ${formData.subject}`
+    )}&body=${encodeURIComponent(emailBody)}`;
 
-    // Open email client
     window.location.href = mailtoLink;
-
-    setSubmitStatus('success');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setIsSubmitting(false);
+    setSubmitStatus('opened');
   };
 
-  const contactInfo = [
-    {
-      icon: '📧',
-      label: 'Email',
-      value: 'hagophadjiakian@gmail.com',
-      href: 'mailto:hagophadjiakian@gmail.com',
-    },
-    {
-      icon: '📍',
-      label: 'Location',
-      value: 'Lebanon / Armenia',
-      href: null,
-    },
-    {
-      icon: '💼',
-      label: 'LinkedIn',
-      value: 'hagop-a-hadjiakian',
-      href: 'https://www.linkedin.com/in/hagop-a-hadjiakian-744b32156',
-    },
-    {
-      icon: '📸',
-      label: 'Instagram',
-      value: '@hagop_a_hadji_akian',
-      href: 'https://www.instagram.com/hagop_a_hadji_akian/',
-    },
-    {
-      icon: '📘',
-      label: 'Facebook',
-      value: 'Hagop Hadjiakian',
-      href: 'https://www.facebook.com/hagop.aris.hadjiakian/',
-    },
-  ];
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="Let's Connect" subtitle="Have a project in mind? Want to share your story? Reach out!">
+      <AnimatedSection title="Let's Connect" titleAs="h1" subtitle="Have a project in mind? Want to share your story? Reach out!">
 
         {/* Motivational intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
             "Together, we can turn challenges into opportunities."
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <AnimatedItem>
             <GlassCard glow glowColor="coral" hover={false}>
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span>✉️</span>
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <span aria-hidden="true">✉️</span>
                 Send a Message
-              </h3>
+              </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 {['name', 'email', 'subject'].map((field) => (
                   <div key={field}>
                     <label htmlFor={field} className="block text-sm font-medium mb-2 capitalize">{field}</label>
@@ -126,11 +89,14 @@ ${formData.message}`;
                       name={field}
                       value={formData[field]}
                       onChange={handleChange}
+                      autoComplete={field === 'name' ? 'name' : field === 'email' ? 'email' : 'off'}
+                      aria-invalid={errors[field] ? 'true' : undefined}
+                      aria-describedby={errors[field] ? `${field}-error` : undefined}
                       className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors[field] ? 'border-red-500' : 'border-white/10'} focus:border-coral focus:outline-none transition-colors`}
                       placeholder={field === 'email' ? 'your@email.com' : field === 'name' ? 'Your name' : "What's this about?"}
                     />
                     {errors[field] && (
-                      <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 text-sm mt-1">
+                      <motion.p id={`${field}-error`} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-sm mt-1">
                         {errors[field]}
                       </motion.p>
                     )}
@@ -145,12 +111,14 @@ ${formData.message}`;
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
+                    aria-invalid={errors.message ? 'true' : undefined}
+                    aria-describedby={errors.message ? 'message-error' : undefined}
                     rows={5}
                     className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.message ? 'border-red-500' : 'border-white/10'} focus:border-coral focus:outline-none transition-colors resize-none`}
                     placeholder="Share your thoughts, ideas, or just say hello..."
                   />
                   {errors.message && (
-                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 text-sm mt-1">
+                    <motion.p id="message-error" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-sm mt-1">
                       {errors.message}
                     </motion.p>
                   )}
@@ -160,30 +128,30 @@ ${formData.message}`;
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-primary"
                 >
-                  {isSubmitting ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Sending...
-                    </span>
-                  ) : 'Send Message'}
+                  Open in my email app
                 </motion.button>
+                <p className="text-muted text-xs text-center">
+                  This opens your email app with the message ready. Press send there to deliver it.
+                </p>
               </form>
 
               <AnimatePresence>
-                {submitStatus && (
+                {submitStatus === 'opened' && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className={`mt-4 p-4 rounded-lg ${submitStatus === 'success' ? 'bg-hope/20 text-hope' : 'bg-red-500/20 text-red-400'}`}
+                    role="status"
+                    className="mt-4 p-4 rounded-lg bg-hope/20 text-hope text-sm"
                   >
-                    {submitStatus === 'success' ? "Message sent successfully! I'll get back to you soon." : 'Something went wrong. Please try again later.'}
+                    Your email app should now be open with your message. Press send there to deliver it. Nothing
+                    opened? Email me directly at{' '}
+                    <a href={`mailto:${PROFILE.email}`} className="underline">
+                      {PROFILE.email}
+                    </a>
+                    .
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -194,56 +162,58 @@ ${formData.message}`;
           <div className="space-y-6">
             <AnimatedItem>
               <GlassCard glow glowColor="sky">
-                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <span>🌐</span>
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <span aria-hidden="true">🌐</span>
                   Find Me Online
-                </h3>
-                <div className="space-y-6">
-                  {contactInfo.map((info, index) => (
-                    <motion.div key={info.label} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} className="flex items-center gap-4">
-                      <div className="text-2xl">{info.icon}</div>
-                      <div>
-                        <p className="text-sm text-muted">{info.label}</p>
-                        {info.href ? (
-                          <a href={info.href} {...(!info.href.startsWith('mailto:') && { target: '_blank', rel: 'noopener noreferrer' })} className="text-white hover:text-coral transition-colors">{info.value}</a>
-                        ) : (
-                          <p className="text-white">{info.value}</p>
-                        )}
+                </h2>
+                <ul className="space-y-5">
+                  {CONTACT_LINKS.map((link) => (
+                    <li key={link.name} className="flex items-center gap-4 reveal">
+                      <span className="w-10 h-10 rounded-full glass flex items-center justify-center text-sky-light shrink-0">
+                        <SocialIcon name={link.icon} className="w-5 h-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-muted">{link.name}</p>
+                        <a
+                          href={link.href}
+                          {...externalProps(link.href)}
+                          className="text-white hover:text-coral transition-colors break-all"
+                        >
+                          {link.handle}
+                        </a>
                       </div>
-                    </motion.div>
+                    </li>
                   ))}
-                </div>
+                  <li className="flex items-center gap-4">
+                    <span className="w-10 h-10 rounded-full glass flex items-center justify-center shrink-0" aria-hidden="true">
+                      📍
+                    </span>
+                    <div>
+                      <p className="text-sm text-muted">Location</p>
+                      <p className="text-white">{PROFILE.location}</p>
+                    </div>
+                  </li>
+                </ul>
               </GlassCard>
             </AnimatedItem>
 
             <AnimatedItem>
               <GlassCard glow glowColor="hope">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <span className="text-hope">✦</span>
                   Let's Inspire Each Other
-                </h3>
+                </h2>
                 <p className="text-muted mb-6">
                   Whether you want to discuss technology, share your own journey of resilience,
                   or collaborate on projects that make a difference — I'm here to listen.
                 </p>
-                <div className="flex gap-4">
-                  {[
-                    { href: 'mailto:hagophadjiakian@gmail.com', icon: '📧' },
-                    { href: 'https://www.linkedin.com/in/hagop-a-hadjiakian-744b32156', icon: '💼' },
-                    { href: 'https://www.instagram.com/hagop_a_hadji_akian/', icon: '📸' },
-                    { href: 'https://www.facebook.com/hagop.aris.hadjiakian/', icon: '📘' },
-                  ].map((social, i) => (
-                    <motion.a
-                      key={i}
-                      href={social.href}
-                      {...(!social.href.startsWith('mailto:') && { target: '_blank', rel: 'noopener noreferrer' })}
-                      whileHover={{ scale: 1.1, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-3 glass rounded-lg text-2xl hover:bg-coral/10 transition-colors"
-                    >
-                      {social.icon}
-                    </motion.a>
-                  ))}
+                <SocialIconRow
+                  only={['Email', 'GitHub', 'LinkedIn']}
+                  linkClassName="p-3 glass rounded-lg text-sky-light hover:text-coral hover:bg-coral/10 transition-colors"
+                  iconClassName="w-6 h-6"
+                />
+                <div className="mt-6">
+                  <CvButton />
                 </div>
               </GlassCard>
             </AnimatedItem>

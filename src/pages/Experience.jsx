@@ -100,33 +100,25 @@ const Experience = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="My Journey" subtitle="From challenge to triumph — every experience shaped who I am">
+      <AnimatedSection title="My Journey" titleAs="h1" subtitle="From challenge to triumph — every experience shaped who I am">
 
         {/* Motivational intro */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 reveal">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">
             "Every setback is a setup for a comeback."
           </p>
-        </motion.div>
+        </div>
 
         <div className="relative">
           <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 w-1 h-full bg-gradient-to-b from-coral via-sky to-hope rounded-full" />
 
           <div className="space-y-12">
             {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`relative flex items-start ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:flex-row`}
-              >
+              <div key={exp.id} className={`relative flex items-start ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:flex-row reveal`}>
                 <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-12' : 'md:pl-12'} pl-8 md:pl-0`}>
+                  {/* Clicking anywhere on the card toggles it; the arrow button at
+                      the bottom is the keyboard / screen-reader control (its
+                      click bubbles up to this handler). */}
                   <GlassCard
                     glow
                     glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}
@@ -134,53 +126,70 @@ const Experience = () => {
                     onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
                   >
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="text-2xl">{exp.icon}</span>
+                      <span className="text-2xl" aria-hidden="true">{exp.icon}</span>
                       <span className="text-coral font-mono text-sm">{exp.period}</span>
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-coral/20 text-coral">{exp.type}</span>
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-coral/20 text-coral-light">{exp.type}</span>
                     </div>
 
-                    <h3 className="text-xl font-bold mb-1">{exp.role}</h3>
+                    <h2 className="text-xl font-bold mb-1">{exp.role}</h2>
                     <p className="text-sky mb-2">{exp.company}</p>
                     <p className="text-muted text-sm mb-3">{exp.location}</p>
                     <p className="text-muted">{exp.description}</p>
 
-                    <AnimatePresence>
-                      {expandedId === exp.id && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-4 pt-4 border-t border-white/10">
-                            <h4 className="text-sm font-semibold mb-3">Key Achievements:</h4>
-                            <ul className="space-y-2 mb-4">
-                              {exp.responsibilities.map((resp, i) => (
-                                <li key={i} className="flex items-start text-muted text-sm">
-                                  <span className="w-1.5 h-1.5 bg-coral rounded-full mt-2 mr-3 flex-shrink-0" />
-                                  {resp}
-                                </li>
-                              ))}
-                            </ul>
+                    <div id={`experience-details-${exp.id}`}>
+                      <AnimatePresence>
+                        {expandedId === exp.id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-4 pt-4 border-t border-white/10">
+                              <h3 className="text-sm font-semibold mb-3">Key Achievements:</h3>
+                              <ul className="space-y-2 mb-4">
+                                {exp.responsibilities.map((resp, i) => (
+                                  <li key={i} className="flex items-start text-muted text-sm">
+                                    <span className="w-1.5 h-1.5 bg-coral rounded-full mt-2 mr-3 flex-shrink-0" />
+                                    {resp}
+                                  </li>
+                                ))}
+                              </ul>
 
-                            <h4 className="text-sm font-semibold mb-3">Technologies:</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {exp.technologies.map((tech) => (
-                                <span key={tech} className="px-2 py-1 text-xs rounded-full bg-white/5 text-muted">
-                                  {tech}
-                                </span>
-                              ))}
+                              <h3 className="text-sm font-semibold mb-3">Technologies:</h3>
+                              <div className="flex flex-wrap gap-2">
+                                {exp.technologies.map((tech) => (
+                                  <span key={tech} className="px-2 py-1 text-xs rounded-full bg-white/5 text-muted">
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
-                    <motion.div animate={{ rotate: expandedId === exp.id ? 180 : 0 }} className="mt-4 flex justify-center">
-                      <svg className="w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </motion.div>
+                    <div className="mt-3 flex justify-center">
+                      <button
+                        type="button"
+                        aria-expanded={expandedId === exp.id}
+                        aria-controls={`experience-details-${exp.id}`}
+                        aria-label={`${expandedId === exp.id ? 'Hide' : 'Show'} details: ${exp.role}`}
+                        className="p-2 rounded-full text-muted hover:text-white hover:bg-white/10 transition-colors"
+                      >
+                        <motion.svg
+                          animate={{ rotate: expandedId === exp.id ? 180 : 0 }}
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </motion.svg>
+                      </button>
+                    </div>
                   </GlassCard>
                 </div>
 
@@ -196,14 +205,14 @@ const Experience = () => {
                 </div>
 
                 <div className="hidden md:block w-1/2" />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Education */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-24">
-          <h3 className="text-3xl font-bold text-center mb-4 gradient-text">Education & Training</h3>
+        <div className="mt-24 reveal">
+          <h2 className="text-3xl font-bold text-center mb-4 gradient-text">Education & Training</h2>
           <p className="text-center text-muted mb-12">Knowledge gained through perseverance</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -211,10 +220,10 @@ const Experience = () => {
               <AnimatedItem key={edu.degree}>
                 <GlassCard glow glowColor={index === 0 ? 'coral' : 'hope'}>
                   <div className="flex items-start gap-4">
-                    <div className="text-3xl">{edu.icon}</div>
+                    <div className="text-3xl" aria-hidden="true">{edu.icon}</div>
                     <div>
                       <span className="text-coral font-mono text-sm">{edu.period}</span>
-                      <h4 className="text-lg font-bold mt-1">{edu.degree}</h4>
+                      <h3 className="text-lg font-bold mt-1">{edu.degree}</h3>
                       <p className="text-sky">{edu.school}</p>
                       <p className="text-muted text-sm mt-2">{edu.description}</p>
                     </div>
@@ -223,21 +232,17 @@ const Experience = () => {
               </AnimatedItem>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Bottom motivation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="mt-20 text-center"
-        >
+        <div className="mt-20 text-center reveal">
           <GlassCard className="inline-block max-w-2xl">
             <p className="motivational-quote text-xl text-sky-light mb-4">
               "My journey proves that with determination, any obstacle can become a stepping stone."
             </p>
             <p className="text-coral font-medium">— Hagop Hadjiakian</p>
           </GlassCard>
-        </motion.div>
+        </div>
       </AnimatedSection>
     </div>
   );

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hagophadjiakian2028.vercel.app/sitemap.xml
