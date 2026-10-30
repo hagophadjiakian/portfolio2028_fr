@@ -100,7 +100,7 @@ const Experience = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="My Journey" subtitle="From challenge to triumph — every experience shaped who I am">
+      <AnimatedSection title="My Journey" titleAs="h1" subtitle="From challenge to triumph — every experience shaped who I am">
 
         {/* Motivational intro */}
         <motion.div
@@ -131,15 +131,25 @@ const Experience = () => {
                     glow
                     glowColor={index % 3 === 0 ? 'coral' : index % 3 === 1 ? 'sky' : 'hope'}
                     className="cursor-pointer"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={expandedId === exp.id}
+                    aria-label={`${exp.role}, ${exp.company}. ${expandedId === exp.id ? 'Hide' : 'Show'} details`}
                     onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setExpandedId(expandedId === exp.id ? null : exp.id);
+                      }
+                    }}
                   >
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="text-2xl">{exp.icon}</span>
+                      <span className="text-2xl" aria-hidden="true">{exp.icon}</span>
                       <span className="text-coral font-mono text-sm">{exp.period}</span>
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-coral/20 text-coral">{exp.type}</span>
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-coral/20 text-coral-light">{exp.type}</span>
                     </div>
 
-                    <h3 className="text-xl font-bold mb-1">{exp.role}</h3>
+                    <h2 className="text-xl font-bold mb-1">{exp.role}</h2>
                     <p className="text-sky mb-2">{exp.company}</p>
                     <p className="text-muted text-sm mb-3">{exp.location}</p>
                     <p className="text-muted">{exp.description}</p>
@@ -153,7 +163,7 @@ const Experience = () => {
                           className="overflow-hidden"
                         >
                           <div className="mt-4 pt-4 border-t border-white/10">
-                            <h4 className="text-sm font-semibold mb-3">Key Achievements:</h4>
+                            <h3 className="text-sm font-semibold mb-3">Key Achievements:</h3>
                             <ul className="space-y-2 mb-4">
                               {exp.responsibilities.map((resp, i) => (
                                 <li key={i} className="flex items-start text-muted text-sm">
@@ -163,7 +173,7 @@ const Experience = () => {
                               ))}
                             </ul>
 
-                            <h4 className="text-sm font-semibold mb-3">Technologies:</h4>
+                            <h3 className="text-sm font-semibold mb-3">Technologies:</h3>
                             <div className="flex flex-wrap gap-2">
                               {exp.technologies.map((tech) => (
                                 <span key={tech} className="px-2 py-1 text-xs rounded-full bg-white/5 text-muted">
@@ -176,7 +186,7 @@ const Experience = () => {
                       )}
                     </AnimatePresence>
 
-                    <motion.div animate={{ rotate: expandedId === exp.id ? 180 : 0 }} className="mt-4 flex justify-center">
+                    <motion.div animate={{ rotate: expandedId === exp.id ? 180 : 0 }} className="mt-4 flex justify-center" aria-hidden="true">
                       <svg className="w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -203,7 +213,7 @@ const Experience = () => {
 
         {/* Education */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-24">
-          <h3 className="text-3xl font-bold text-center mb-4 gradient-text">Education & Training</h3>
+          <h2 className="text-3xl font-bold text-center mb-4 gradient-text">Education & Training</h2>
           <p className="text-center text-muted mb-12">Knowledge gained through perseverance</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -211,10 +221,10 @@ const Experience = () => {
               <AnimatedItem key={edu.degree}>
                 <GlassCard glow glowColor={index === 0 ? 'coral' : 'hope'}>
                   <div className="flex items-start gap-4">
-                    <div className="text-3xl">{edu.icon}</div>
+                    <div className="text-3xl" aria-hidden="true">{edu.icon}</div>
                     <div>
                       <span className="text-coral font-mono text-sm">{edu.period}</span>
-                      <h4 className="text-lg font-bold mt-1">{edu.degree}</h4>
+                      <h3 className="text-lg font-bold mt-1">{edu.degree}</h3>
                       <p className="text-sky">{edu.school}</p>
                       <p className="text-muted text-sm mt-2">{edu.description}</p>
                     </div>

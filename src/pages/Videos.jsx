@@ -8,7 +8,7 @@ const Videos = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="Videos" subtitle="Video records of my journey and projects">
+      <AnimatedSection title="Videos" titleAs="h1" subtitle="Video records of my journey and projects">
 
         {/* Motivational intro */}
         <motion.div

@@ -14,7 +14,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
-const AnimatedSection = ({ children, className = '', title, subtitle, id, ...props }) => {
+const AnimatedSection = ({ children, className = '', title, titleAs: TitleTag = 'h2', subtitle, id, ...props }) => {
   return (
     <section id={id} className={`py-20 px-4 sm:px-6 lg:px-8 ${className}`} {...props}>
       <div className="max-w-7xl mx-auto">
@@ -27,9 +27,9 @@ const AnimatedSection = ({ children, className = '', title, subtitle, id, ...pro
             className="text-center mb-16"
           >
             {title && (
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <TitleTag className="text-4xl md:text-5xl font-bold mb-4">
                 <span className="gradient-text">{title}</span>
-              </h2>
+              </TitleTag>
             )}
             {subtitle && (
               <p className="text-muted text-lg max-w-2xl mx-auto">{subtitle}</p>

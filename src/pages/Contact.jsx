@@ -57,7 +57,7 @@ ${formData.message}`;
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="Let's Connect" subtitle="Have a project in mind? Want to share your story? Reach out!">
+      <AnimatedSection title="Let's Connect" titleAs="h1" subtitle="Have a project in mind? Want to share your story? Reach out!">
 
         {/* Motivational intro */}
         <motion.div
@@ -74,12 +74,12 @@ ${formData.message}`;
           {/* Contact Form */}
           <AnimatedItem>
             <GlassCard glow glowColor="coral" hover={false}>
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <span aria-hidden="true">✉️</span>
                 Send a Message
-              </h3>
+              </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 {['name', 'email', 'subject'].map((field) => (
                   <div key={field}>
                     <label htmlFor={field} className="block text-sm font-medium mb-2 capitalize">{field}</label>
@@ -90,11 +90,14 @@ ${formData.message}`;
                       name={field}
                       value={formData[field]}
                       onChange={handleChange}
+                      autoComplete={field === 'name' ? 'name' : field === 'email' ? 'email' : 'off'}
+                      aria-invalid={errors[field] ? 'true' : undefined}
+                      aria-describedby={errors[field] ? `${field}-error` : undefined}
                       className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors[field] ? 'border-red-500' : 'border-white/10'} focus:border-coral focus:outline-none transition-colors`}
                       placeholder={field === 'email' ? 'your@email.com' : field === 'name' ? 'Your name' : "What's this about?"}
                     />
                     {errors[field] && (
-                      <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 text-sm mt-1">
+                      <motion.p id={`${field}-error`} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-sm mt-1">
                         {errors[field]}
                       </motion.p>
                     )}
@@ -109,12 +112,14 @@ ${formData.message}`;
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
+                    aria-invalid={errors.message ? 'true' : undefined}
+                    aria-describedby={errors.message ? 'message-error' : undefined}
                     rows={5}
                     className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.message ? 'border-red-500' : 'border-white/10'} focus:border-coral focus:outline-none transition-colors resize-none`}
                     placeholder="Share your thoughts, ideas, or just say hello..."
                   />
                   {errors.message && (
-                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 text-sm mt-1">
+                    <motion.p id="message-error" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-sm mt-1">
                       {errors.message}
                     </motion.p>
                   )}
@@ -158,10 +163,10 @@ ${formData.message}`;
           <div className="space-y-6">
             <AnimatedItem>
               <GlassCard glow glowColor="sky">
-                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                   <span aria-hidden="true">🌐</span>
                   Find Me Online
-                </h3>
+                </h2>
                 <ul className="space-y-5">
                   {LINKS.map((link, index) => (
                     <motion.li
@@ -202,10 +207,10 @@ ${formData.message}`;
 
             <AnimatedItem>
               <GlassCard glow glowColor="hope">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <span className="text-hope">✦</span>
                   Let's Inspire Each Other
-                </h3>
+                </h2>
                 <p className="text-muted mb-6">
                   Whether you want to discuss technology, share your own journey of resilience,
                   or collaborate on projects that make a difference — I'm here to listen.

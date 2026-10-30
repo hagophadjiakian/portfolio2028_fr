@@ -63,7 +63,7 @@ const Skills = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <AnimatedSection title="Skills & Expertise" subtitle="Technologies I use to turn challenges into solutions">
+      <AnimatedSection title="Skills & Expertise" titleAs="h1" subtitle="Technologies I use to turn challenges into solutions">
         {/* Motivational intro */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
           <p className="motivational-quote text-xl text-sky-light max-w-2xl mx-auto">"Every skill learned is a step toward independence."</p>

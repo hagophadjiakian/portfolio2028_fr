@@ -26,9 +26,15 @@ const AppShell = () => (
       <ScrollToTop />
       <RouteMeta />
       <div className="min-h-screen bg-primary relative">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[300] focus:px-4 focus:py-2 focus:rounded-full focus:bg-coral focus:text-white"
+        >
+          Skip to content
+        </a>
         <ParticleBackground />
         <Navbar />
-        <main id="main" className="relative z-10">
+        <main id="main" tabIndex={-1} className="relative z-10 focus:outline-none">
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<Home />} />

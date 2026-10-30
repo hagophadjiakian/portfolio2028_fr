@@ -20,7 +20,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -30,6 +30,7 @@ const Navbar = () => {
 
   return (
     <motion.nav
+      aria-label="Main"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
@@ -39,26 +40,32 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link to="/">
+          <Link to="/" aria-label="Hagop Hadjiakian, home">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex items-center gap-2"
             >
               <span className="text-2xl font-bold gradient-text">HH</span>
-              <span className="hidden sm:inline text-xs text-coral font-mono">SCI Survivor</span>
+              <span className="hidden sm:inline text-xs text-coral-light font-mono">SCI Survivor</span>
             </motion.div>
           </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-8">
             {links.map((link) => (
-              <Link key={link.path} to={link.path} className="relative group">
+              <Link
+                key={link.path}
+                to={link.path}
+                className="relative group"
+                aria-current={location.pathname === link.path ? 'page' : undefined}
+              >
                 <span className={`text-sm font-medium transition-colors ${
-                  location.pathname === link.path ? 'text-coral' : 'text-muted hover:text-white'
+                  location.pathname === link.path ? 'text-coral-light' : 'text-muted hover:text-white'
                 }`}>
                   {link.label}
                 </span>
                 <motion.span
+                  aria-hidden="true"
                   className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-coral to-sky"
                   initial={{ width: 0 }}
                   animate={{ width: location.pathname === link.path ? '100%' : 0 }}
@@ -70,10 +77,14 @@ const Navbar = () => {
 
           {/* Mobile Toggle */}
           <button
+            type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2 text-white"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
-            <div className="w-6 h-5 flex flex-col justify-between">
+            <div className="w-6 h-5 flex flex-col justify-between" aria-hidden="true">
               <motion.span
                 animate={{ rotate: mobileOpen ? 45 : 0, y: mobileOpen ? 8 : 0 }}
                 className="w-full h-0.5 bg-coral rounded-full origin-left"
@@ -94,6 +105,7 @@ const Navbar = () => {
         <AnimatePresence>
           {mobileOpen && (
             <motion.div
+              id="mobile-menu"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -106,8 +118,9 @@ const Navbar = () => {
                   <Link
                     key={link.path}
                     to={link.path}
+                    aria-current={location.pathname === link.path ? 'page' : undefined}
                     className={`block text-lg font-medium py-2 ${
-                      location.pathname === link.path ? 'text-coral' : 'text-muted hover:text-white'
+                      location.pathname === link.path ? 'text-coral-light' : 'text-muted hover:text-white'
                     }`}
                   >
                     {link.label}

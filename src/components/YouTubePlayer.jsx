@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 
+// Privacy-friendly embed domain (no tracking cookies until the video plays)
+const EMBED_ORIGIN = 'https://www.youtube-nocookie.com';
+const YT_ORIGINS = ['https://www.youtube-nocookie.com', 'https://www.youtube.com'];
+
 // Track active video globally
 let setActiveCallbacks = new Set();
 
@@ -31,8 +35,8 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
     if (!isPlaying) return;
 
     const handleMessage = (event) => {
-      // Accept messages from YouTube
-      if (!event.origin.includes('youtube.com')) return;
+      // Accept messages from YouTube only
+      if (!YT_ORIGINS.includes(event.origin)) return;
 
       try {
         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
@@ -69,14 +73,14 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
           event: 'listening',
           id: videoId,
           channel: 'widget'
-        }), '*');
+        }), EMBED_ORIGIN);
 
         // Also request current state
         iframeRef.current.contentWindow.postMessage(JSON.stringify({
           event: 'command',
           func: 'addEventListener',
           args: ['onStateChange']
-        }), '*');
+        }), EMBED_ORIGIN);
       }
     };
 
@@ -113,7 +117,7 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
         event: 'listening',
         id: videoId,
         channel: 'widget'
-      }), '*');
+      }), EMBED_ORIGIN);
     }
   };
 
@@ -124,6 +128,7 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
         type="button"
         className={`aspect-video bg-black relative cursor-pointer group w-full block ${className}`}
         onClick={handlePlay}
+        aria-label={`Play video: ${title}`}
         style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
       >
         {/* Use smaller thumbnail (mqdefault) for faster mobile loading, upgrade to hqdefault on load */}
@@ -131,12 +136,12 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
           src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
           srcSet={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg 320w, https://img.youtube.com/vi/${videoId}/hqdefault.jpg 480w`}
           sizes="(max-width: 640px) 320px, 480px"
-          alt={title}
+          alt=""
           className="w-full h-full object-cover pointer-events-none select-none"
           loading="lazy"
           draggable="false"
         />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors pointer-events-none" aria-hidden="true">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 group-active:scale-95 transition-transform shadow-lg">
             <svg className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -157,9 +162,11 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
       )}
 
       <button
+        type="button"
         onClick={handleStop}
         className="absolute top-2 right-2 z-20 w-8 h-8 bg-black/70 hover:bg-black rounded-full flex items-center justify-center text-white transition-colors"
         title="Close video"
+        aria-label={`Close video: ${title}`}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -169,10 +176,11 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
       <iframe
         ref={iframeRef}
         className="w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&widgetid=1`}
+        src={`${EMBED_ORIGIN}/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&widgetid=1&origin=${encodeURIComponent(window.location.origin)}`}
         title={title}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
         onLoad={handleIframeLoad}
       />
