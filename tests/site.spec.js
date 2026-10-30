@@ -80,7 +80,16 @@ test('main navigation works', async ({ page, isMobile }) => {
 });
 
 test.describe('home page', () => {
-  test('main buttons are visible without scrolling', async ({ page }) => {
+  test('photo is large', async ({ page, isMobile }) => {
+    await page.goto('/');
+    const photo = await page.getByRole('img', { name: 'Portrait of Hagop Hadjiakian' }).boundingBox();
+    const { width, height } = page.viewportSize();
+    if (isMobile) expect(photo.width / width, 'share of the screen width').toBeGreaterThan(0.7);
+    else expect(photo.height / height, 'share of the screen height').toBeGreaterThan(0.6);
+  });
+
+  test('main buttons are visible without scrolling on computers', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'on phones the large photo comes first and the buttons are just below');
     await page.goto('/');
     const { height } = page.viewportSize();
     for (const name of ['My Journey', 'View Projects']) {
@@ -101,21 +110,77 @@ test.describe('home page', () => {
     const cls = await page.evaluate(() => window.__cls);
     expect(cls, 'cumulative layout shift').toBeLessThan(0.1);
   });
+});
 
-  test('no music is downloaded until the visitor turns it on', async ({ page }) => {
+test.describe('music', () => {
+  const trackAudio = (page) => {
     const audio = [];
     page.on('request', (request) => {
       if (request.url().includes('/audio/')) audio.push(request.url().split('/').pop());
     });
-    await page.goto('/');
-    await page.waitForTimeout(2000);
-    expect(audio).toEqual([]);
+    return audio;
+  };
+  const isPlaying = (page) => page.evaluate(() => !document.querySelector('audio').paused);
 
-    await page.getByRole('button', { name: 'Play background music' }).click();
-    await expect.poll(() => audio.length).toBeGreaterThan(0);
-    // Opus where supported (Chromium), MP3 elsewhere — one file either way
-    expect([...new Set(audio)]).toEqual(['home.webm']);
+  test('a first click on a link starts that page\'s track directly', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'uses the desktop navigation');
+    const audio = trackAudio(page);
+    await page.goto('/');
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'My Story' }).click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect
+      .poll(() => page.evaluate(() => { const a = document.querySelector('audio'); return !a.paused && a.currentSrc.endsWith('about.webm'); }))
+      .toBe(true);
+    expect(audio).toContain('about.webm');
   });
+
+  test('turning it off is remembered', async ({ page }) => {
+    const audio = trackAudio(page);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Pause background music' }).click();
+    await expect(page.getByRole('button', { name: 'Play background music' })).toHaveAttribute('aria-pressed', 'false');
+
+    await page.reload();
+    await expect(page.getByRole('button', { name: 'Play background music' })).toBeVisible();
+    await page.locator('h1').click();
+    await page.waitForTimeout(1000);
+    expect(await isPlaying(page)).toBe(false);
+    expect(audio).toEqual([]);
+  });
+});
+
+test('phone menu covers the page, which cannot scroll while it is open', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'phone menu only');
+  await page.goto('/about');
+  await page.getByRole('button', { name: 'Open menu' }).click();
+  const menu = page.locator('#mobile-menu');
+  await expect(menu).toBeVisible();
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe('hidden');
+  // solid background, nothing of the page shows through
+  expect(await menu.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(13, 27, 42)');
+
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeHidden();
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).not.toBe('hidden');
+});
+
+test('a playing video pauses when it is scrolled off the screen', async ({ page }) => {
+  // Stand-in for YouTube's player that records the commands it receives
+  await page.route('https://www.youtube-nocookie.com/embed/**', (route) =>
+    route.fulfill({
+      contentType: 'text/html',
+      body: '<!doctype html><body style="background:#000"><script>window.__msgs=[];addEventListener("message",(e)=>__msgs.push(String(e.data)));</script></body>',
+    })
+  );
+  await page.goto('/about');
+  await page.getByRole('button', { name: 'Play video: Graduation Day' }).click();
+  const frame = await (await page.waitForSelector('iframe[src*="youtube-nocookie"]')).contentFrame();
+  await frame.waitForLoadState();
+  const paused = () => frame.evaluate(() => window.__msgs.some((m) => m.includes('pauseVideo')));
+  expect(await paused()).toBe(false);
+
+  await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+  await expect.poll(paused).toBe(true);
 });
 
 test('contact form checks the fields, then opens the email app', async ({ page }) => {
@@ -158,6 +223,15 @@ test.describe('keyboard', () => {
     await expect(dialog).toBeVisible();
     const close = page.getByRole('button', { name: 'Close image' });
     await expect(close).toBeFocused();
+    // The viewer covers everything, including the navigation bar at the top
+    expect(await page.evaluate(() => !!document.elementFromPoint(20, 20)?.closest('[role=dialog]'))).toBe(true);
+    const box = await close.boundingBox();
+    expect(
+      await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest('button')?.getAttribute('aria-label'), [
+        box.x + box.width / 2,
+        box.y + box.height / 2,
+      ])
+    ).toBe('Close image');
     await expect(dialog.getByRole('img', { name: "Dean's List Recognition" })).toHaveAttribute('src', /deans-1600\.webp$/);
     await page.keyboard.press('Tab');
     await expect(close).toBeFocused();

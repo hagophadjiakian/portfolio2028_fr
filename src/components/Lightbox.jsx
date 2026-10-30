@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Start downloading the large version of an image (used when the visitor
@@ -17,7 +18,8 @@ export const preloadImage = (src) => {
 const ViewerImage = ({ image }) => {
   const large = image.full || image.src;
   const [largeReady, setLargeReady] = useState(large === image.src);
-  const imgClass = 'w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl';
+  // Natural proportions, as large as fits (never stretched beyond its own size)
+  const imgClass = 'block w-auto h-auto max-w-full max-h-[75vh] mx-auto rounded-lg shadow-2xl';
   return (
     <>
       {!largeReady && <img src={image.src} alt="" aria-hidden="true" className={imgClass} />}
@@ -66,7 +68,13 @@ const Lightbox = ({ image, onClose }) => {
     };
   }, [image, onClose]);
 
-  return (
+  // Rendered at the end of <body>, so it covers everything, including the
+  // navigation bar and the music button (the page content sits in a lower layer).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {image && (
         <motion.div
@@ -86,24 +94,21 @@ const Lightbox = ({ image, onClose }) => {
             className="relative max-w-4xl max-h-[95vh] w-full flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center mb-3 px-2">
-              <p className="text-white flex items-center gap-2">
+            {/* Title and close button above the picture */}
+            <div className="flex items-center justify-between gap-3 mb-3 px-1">
+              <p className="text-white flex items-center gap-2 min-w-0">
                 {image.icon && (
                   <span className="text-xl" aria-hidden="true">
                     {image.icon}
                   </span>
                 )}
-                <span className="font-semibold text-sm sm:text-base">{image.title}</span>
+                <span className="font-semibold text-sm sm:text-base truncate">{image.title}</span>
               </p>
-            </div>
-
-            <div className="flex-1 flex items-center justify-center overflow-hidden relative">
-              <ViewerImage key={image.full || image.src} image={image} />
               <button
                 ref={closeRef}
                 type="button"
                 onClick={onClose}
-                className="absolute top-2 right-2 sm:top-4 sm:right-4 w-10 h-10 sm:w-12 sm:h-12 bg-coral hover:bg-coral-light text-white rounded-full flex items-center justify-center transition-all shadow-lg hover:scale-110"
+                className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-coral hover:bg-coral-light text-white rounded-full flex items-center justify-center transition-all shadow-lg hover:scale-110"
                 aria-label="Close image"
               >
                 <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
@@ -112,11 +117,16 @@ const Lightbox = ({ image, onClose }) => {
               </button>
             </div>
 
+            <div className="relative flex items-center justify-center overflow-hidden">
+              <ViewerImage key={image.full || image.src} image={image} />
+            </div>
+
             <p className="text-center text-muted text-xs sm:text-sm mt-3 px-2">Tap outside, press Esc or the X button to close</p>
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

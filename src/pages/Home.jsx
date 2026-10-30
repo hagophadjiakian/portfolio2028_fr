@@ -48,10 +48,11 @@ const Home = () => {
 
       {/* Phones and tablets: one centred column with the photo on top.
           Large screens: text on the left, a big photo on the right. */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center lg:text-left lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-16">
-        {/* Profile photo (pre-cropped to the part shown in the frame) */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center lg:text-left lg:grid lg:grid-cols-[minmax(0,max-content)_auto] lg:justify-center lg:items-center lg:gap-16 xl:gap-24">
+        {/* Profile photo, large: most of the screen width on phones, most of the
+            screen height on computers (pre-cropped to the part shown in the frame) */}
         <div className="mb-4 sm:mb-5 lg:mb-0 lg:order-2 animate-fade-up [animation-delay:100ms]">
-          <div className="mx-auto w-44 h-60 [@media(max-width:639px)_and_(max-height:700px)]:w-32 [@media(max-width:639px)_and_(max-height:700px)]:h-44 sm:w-52 sm:h-72 lg:w-80 lg:h-[28rem] [@media(min-width:1024px)_and_(max-height:820px)]:w-72 [@media(min-width:1024px)_and_(max-height:820px)]:h-[25rem] rounded-3xl bg-gradient-to-br from-coral to-sky p-1 shadow-lg">
+          <div className="mx-auto aspect-[5/7] w-[min(78vw,22rem)] sm:w-96 lg:w-auto lg:h-[min(72vh,42rem)] rounded-3xl bg-gradient-to-br from-coral to-sky p-1 shadow-xl shadow-coral/20">
             <img
               src="/assets/images/survivor-hero.webp"
               alt="Portrait of Hagop Hadjiakian"
@@ -59,6 +60,7 @@ const Home = () => {
               width="423"
               height="592"
               loading="eager"
+              fetchpriority="high"
             />
           </div>
         </div>

@@ -62,7 +62,9 @@ Vercel builds every push to `master`: `npm ci`, then `npm run build`, and serves
 
 - every page loads with its own title and heading, with no errors and no sideways scrolling
 - navigation, the 404 page and the old `/documentation` → `/videos` redirect
-- the home page: buttons visible without scrolling, nothing jumping while the hero animates, no music downloaded until the visitor turns it on
+- the home page: large photo, buttons visible without scrolling on computers, nothing jumping while the hero animates
+- music: on by default, starts with the first click (or by itself where the browser allows sound), nothing downloaded before that, and turning it off is remembered
+- the phone menu covers the page and stops it scrolling; a playing video pauses when scrolled off the screen
 - the contact form checks its fields before opening the email app, and the contact page doesn't list NeurolinkUp
 - cards and photos are visible before JavaScript has loaded, and the project gallery opens with the photo already shown
 - the experience cards and the image viewer work with the keyboard
@@ -72,7 +74,7 @@ Vercel builds every push to `master`: `npm ci`, then `npm run build`, and serves
 
 ## Background music
 
-Music is off by default and is only downloaded when a visitor presses play (or points at the music button, to get a head start). Each page has its own track (`AUDIO_TRACKS` in `src/data/site.js`), saved twice in `public/audio/`: `name.webm` (Opus, about 750 KB, used by most browsers) and `name.mp3` (about 940 KB, for the rest). When the visitor changes page with music on, the current track keeps playing while the next one downloads, then fades over.
+Music is on by default. Browsers only allow sound after the visitor has tapped or clicked the page, so it starts right away where that's allowed and otherwise with the first tap or click anywhere (keyboard presses don't start it, so screen-reader users aren't interrupted). Nothing downloads before then. Turning it off with the button is remembered in that browser. Each page has its own track (`AUDIO_TRACKS` in `src/data/site.js`), saved twice in `public/audio/`: `name.webm` (Opus, about 750 KB, used by most browsers) and `name.mp3` (about 940 KB, for the rest). When the visitor changes page with music on, the current track keeps playing while the next one downloads, then fades over.
 
 To replace a track, make a two-minute loop in both formats, for example with ffmpeg:
 

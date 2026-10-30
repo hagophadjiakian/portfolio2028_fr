@@ -32,7 +32,28 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const iframeRef = useRef(null);
+  const containerRef = useRef(null);
+  const onScreen = useRef(true);
   const { pauseForVideo, resumeAfterVideo } = useAudio();
+
+  const sendCommand = (func) => {
+    iframeRef.current?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), EMBED_ORIGIN);
+  };
+
+  // Pause the video when it is scrolled (mostly) off the screen, so it doesn't
+  // keep playing out of sight. Press play again to continue where it stopped.
+  useEffect(() => {
+    if (!isPlaying || typeof IntersectionObserver === 'undefined') return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        onScreen.current = entry.isIntersecting && entry.intersectionRatio >= 0.25;
+        if (!onScreen.current) sendCommand('pauseVideo');
+      },
+      { threshold: [0, 0.25] }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [isPlaying]);
 
   // If the visitor leaves the page while this video plays, let the music resume
   const playingRef = useRef(false);
@@ -135,6 +156,13 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
 
   const handleIframeLoad = () => {
     setIsLoading(false);
+    // Scrolled away while it was loading: don't start playing out of sight
+    // (the player needs a moment after loading before it accepts commands)
+    [500, 1500].forEach((ms) =>
+      setTimeout(() => {
+        if (!onScreen.current) sendCommand('pauseVideo');
+      }, ms)
+    );
 
     // Initialize YouTube API listener
     if (iframeRef.current && iframeRef.current.contentWindow) {
@@ -182,7 +210,7 @@ const YouTubePlayer = ({ videoId, title, className = '' }) => {
 
   // Show iframe when playing
   return (
-    <div className={`aspect-video bg-black relative ${className}`}>
+    <div ref={containerRef} className={`aspect-video bg-black relative ${className}`}>
       {/* While YouTube's player loads, keep the thumbnail on screen with a spinner */}
       {isLoading && (
         <div className="absolute inset-0 z-10" aria-hidden="true">

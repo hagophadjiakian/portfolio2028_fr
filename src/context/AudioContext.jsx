@@ -10,13 +10,11 @@ export const useAudio = () => {
   return context;
 };
 
-// Music is OFF until the visitor turns it on. Nothing is downloaded before that:
-// the <audio> element in AudioPlayer uses preload="none" and only loads the
-// current page's track when it is actually played (or when the visitor points
-// at the music button, to get a head start).
+// Music is ON by default (see AudioPlayer for when it actually starts). The
+// <audio> element uses preload="none", so nothing downloads until it plays.
 export const AudioProvider = ({ children }) => {
   const audioRef = useRef(null);
-  const [musicOn, setMusicOn] = useState(false);
+  const [musicOn, setMusicOn] = useState(true);
   // True while a video is playing and the music is paused for it
   const pausedForVideo = useRef(false);
 

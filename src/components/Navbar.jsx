@@ -28,11 +28,35 @@ const Navbar = () => {
     setMobileOpen(false);
   }, [location]);
 
+  // While the phone menu is open: the page behind can't scroll, Escape closes
+  // it, and it closes by itself if the screen becomes wide (rotating a tablet).
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+    const html = document.documentElement;
+    const previous = [html.style.overflow, document.body.style.overflow];
+    html.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    const wide = window.matchMedia('(min-width: 768px)');
+    const onWide = (e) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    wide.addEventListener('change', onWide);
+    return () => {
+      [html.style.overflow, document.body.style.overflow] = previous;
+      window.removeEventListener('keydown', onKey);
+      wide.removeEventListener('change', onWide);
+    };
+  }, [mobileOpen]);
+
   return (
     <nav
       aria-label="Main"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-nav-in ${
-        isScrolled ? 'glass py-4' : 'py-6'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-nav-in ${isScrolled ? 'py-4' : 'py-6'} ${
+        mobileOpen ? 'bg-primary' : isScrolled ? 'glass' : ''
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,20 +107,24 @@ const Navbar = () => {
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
           >
-            <div className="w-6 h-5 flex flex-col justify-between" aria-hidden="true">
-              <motion.span
-                animate={{ rotate: mobileOpen ? 45 : 0, y: mobileOpen ? 8 : 0 }}
-                className="w-full h-0.5 bg-coral rounded-full origin-left"
+            {/* Three lines that turn into an X */}
+            <span className="relative block w-6 h-5" aria-hidden="true">
+              <span
+                className={`absolute left-0 top-0 w-full h-0.5 rounded-full bg-coral transition-transform duration-200 ${
+                  mobileOpen ? 'translate-y-[9px] rotate-45' : ''
+                }`}
               />
-              <motion.span
-                animate={{ opacity: mobileOpen ? 0 : 1 }}
-                className="w-full h-0.5 bg-white rounded-full"
+              <span
+                className={`absolute left-0 top-[9px] w-full h-0.5 rounded-full bg-white transition-opacity duration-200 ${
+                  mobileOpen ? 'opacity-0' : ''
+                }`}
               />
-              <motion.span
-                animate={{ rotate: mobileOpen ? -45 : 0, y: mobileOpen ? -8 : 0 }}
-                className="w-full h-0.5 bg-coral rounded-full origin-left"
+              <span
+                className={`absolute left-0 bottom-0 w-full h-0.5 rounded-full bg-coral transition-transform duration-200 ${
+                  mobileOpen ? '-translate-y-[9px] -rotate-45' : ''
+                }`}
               />
-            </div>
+            </span>
           </button>
         </div>
 
@@ -105,20 +133,20 @@ const Navbar = () => {
           {mobileOpen && (
             <motion.div
               id="mobile-menu"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden absolute top-full left-0 right-0 z-[999] glass overflow-hidden"
-              style={{ background: 'rgba(13, 27, 42, 0.98)', backdropFilter: 'blur(20px)' }}
+              // Solid panel covering the whole screen under the bar
+              className="md:hidden absolute top-full inset-x-0 z-[999] h-screen overflow-y-auto overscroll-contain bg-primary border-t border-white/10"
             >
-              <div className="py-4 px-4 space-y-4">
+              <div className="pt-4 pb-32 px-4 space-y-1">
                 {links.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
                     aria-current={location.pathname === link.path ? 'page' : undefined}
-                    className={`block text-lg font-medium py-2 ${
+                    className={`block text-lg font-medium py-3 ${
                       location.pathname === link.path ? 'text-coral-light' : 'text-muted hover:text-white'
                     }`}
                   >

@@ -13,6 +13,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     // Entrance animations finish instantly, which keeps the checks stable
     reducedMotion: 'reduce',
+    // Like a normal browser on a first visit: no sound until the visitor clicks
+    launchOptions: { args: ['--autoplay-policy=document-user-activation-required'] },
   },
   webServer: {
     command: 'npm run preview',

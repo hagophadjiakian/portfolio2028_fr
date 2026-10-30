@@ -24,16 +24,40 @@ const fadeTo = (audio, target, ms) =>
     requestAnimationFrame(step);
   });
 
+// The visitor's choice is remembered in this browser (only "off" changes anything).
+const PREF_KEY = 'hh-music';
+const readPref = () => {
+  try {
+    return localStorage.getItem(PREF_KEY);
+  } catch {
+    return null;
+  }
+};
+const savePref = (value) => {
+  try {
+    localStorage.setItem(PREF_KEY, value);
+  } catch {
+    // storage unavailable (private mode): the choice lasts for this visit only
+  }
+};
+
 // How long to keep the current track playing while the next page's track
 // downloads, before switching anyway.
 const SWITCH_TIMEOUT_MS = 8000;
+// Wait this long after the page has loaded before trying to start the music,
+// so it doesn't slow down the first view.
+const AUTOSTART_DELAY_MS = 1500;
 
-// One small control in the bottom-right corner. Music starts only when the
-// visitor presses it, and only the current page's track is downloaded.
+// Music is ON by default. Browsers only allow sound after the visitor has
+// tapped or clicked the page, so it starts right away where that's allowed and
+// otherwise with the first tap or click anywhere. Nothing downloads before then.
+// One small control in the bottom-right corner turns it off (remembered).
 const AudioPlayer = () => {
   const { audioRef, musicOn, setMusicOn, pausedForVideo } = useAudio();
   const [volume, setVolume] = useState(0.3);
   const [isLoading, setIsLoading] = useState(false);
+  // Playback has begun at least once during this visit
+  const [started, setStarted] = useState(false);
   const { pathname } = useLocation();
   const extension = useRef('mp3');
   const volumeRef = useRef(volume);
@@ -41,16 +65,67 @@ const AudioPlayer = () => {
   const warmedUp = useRef(false);
   const musicOnRef = useRef(musicOn);
   musicOnRef.current = musicOn;
+  const startedRef = useRef(started);
+  startedRef.current = started;
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
 
   useEffect(() => {
     extension.current = pickExtension();
+    if (readPref() === 'off') setMusicOn(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const urlFor = useCallback((path) => `${trackFor(path)}.${extension.current}`, []);
 
-  // Changing page. If music is off, just point at the new track (nothing
-  // downloads). If music is on, keep the current track playing while the next
-  // one downloads, then switch with a short fade — no silent gap.
+  // Start the music when the browser allows it.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !musicOn || started) return undefined;
+
+    const start = (src, showSpinner) => {
+      const track = src || urlFor(pathnameRef.current);
+      if (!audio.src.endsWith(track)) audio.src = track;
+      audio.volume = volumeRef.current;
+      if (showSpinner) setIsLoading(true);
+      return audio
+        .play()
+        .then(() => setStarted(true))
+        .catch(() => setIsLoading(false));
+    };
+
+    // 1. Try shortly after the page has loaded (works where autoplay is allowed).
+    let timer = null;
+    const tryNow = () => {
+      timer = setTimeout(() => start(undefined, false), AUTOSTART_DELAY_MS);
+    };
+    if (document.readyState === 'complete') tryNow();
+    else window.addEventListener('load', tryNow, { once: true });
+
+    // 2. Otherwise start with the first mouse click or tap anywhere. Clicks made
+    //    with the keyboard are ignored, so screen-reader users aren't
+    //    interrupted (they can use the music button).
+    const onFirstClick = (event) => {
+      if (event.detail === 0) return;
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('[data-music-toggle], [aria-label^="Play video"]')) return;
+      // Clicking a link to another page: start that page's track directly
+      const link = target?.closest('a[href^="/"]');
+      start(link ? urlFor(new URL(link.href).pathname) : undefined, true);
+    };
+    document.addEventListener('click', onFirstClick, true);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('load', tryNow);
+      document.removeEventListener('click', onFirstClick, true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [musicOn, started]);
+
+  // Changing page. If no music is playing, just point at the new track (nothing
+  // downloads). If music is playing, keep the current track going while the
+  // next one downloads, then switch with a short fade — no silent gap.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return undefined;
@@ -60,7 +135,7 @@ const AudioPlayer = () => {
     pendingSwitch.current?.abort();
     pendingSwitch.current = null;
 
-    if (!musicOn) {
+    if (!musicOn || !started) {
       audio.preload = 'none'; // undo any warm-up, so nothing downloads
       audio.src = next;
       warmedUp.current = false;
@@ -88,7 +163,7 @@ const AudioPlayer = () => {
           await audio.play();
           await fadeTo(audio, volumeRef.current, 800);
         } catch {
-          setMusicOn(false);
+          setStarted(false); // wait for the next click to start again
         }
       });
 
@@ -105,7 +180,7 @@ const AudioPlayer = () => {
   useEffect(() => {
     const onVisibility = () => {
       const audio = audioRef.current;
-      if (!audio || !musicOn) return;
+      if (!audio || !musicOn || !startedRef.current) return;
       if (document.hidden) audio.pause();
       else if (!pausedForVideo.current) audio.play().catch(() => {});
     };
@@ -113,8 +188,8 @@ const AudioPlayer = () => {
     return () => document.removeEventListener('visibilitychange', onVisibility);
   }, [musicOn, audioRef, pausedForVideo]);
 
-  // Start downloading when the visitor points at (or focuses, or touches) the
-  // button, so the music starts sooner when they press it.
+  // When music is off, start downloading as soon as the visitor points at (or
+  // focuses, or touches) the button, so it starts sooner when they press it.
   const warmUp = () => {
     const audio = audioRef.current;
     if (!audio || musicOn || warmedUp.current) return;
@@ -133,20 +208,24 @@ const AudioPlayer = () => {
       pendingSwitch.current = null;
       audio.pause();
       setMusicOn(false);
+      setIsLoading(false);
+      savePref('off');
       return;
     }
     const next = urlFor(pathname);
     if (!audio.src.endsWith(next)) audio.src = next;
     audio.volume = volumeRef.current;
+    savePref('on');
+    setMusicOn(true);
     setIsLoading(true);
     audio
       .play()
-      .then(() => setMusicOn(true))
-      .catch(() => {
-        setIsLoading(false);
-        setMusicOn(false);
-      });
+      .then(() => setStarted(true))
+      .catch(() => setIsLoading(false));
   };
+
+  // On, but waiting for the visitor's first tap before the browser allows sound
+  const waiting = musicOn && !started && !isLoading;
 
   return (
     <>
@@ -159,8 +238,8 @@ const AudioPlayer = () => {
         onPause={() => setIsLoading(false)}
       />
 
-      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex items-center gap-2">
-        {musicOn && (
+      <aside aria-label="Background music" className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex items-center gap-2">
+        {musicOn && started && (
           <label className="hidden md:flex glass px-3 py-2 rounded-full items-center">
             <span className="sr-only">Music volume</span>
             <input
@@ -177,17 +256,21 @@ const AudioPlayer = () => {
 
         <button
           type="button"
+          data-music-toggle=""
           onClick={toggleMusic}
           onPointerEnter={warmUp}
           onFocus={warmUp}
           onTouchStart={warmUp}
           aria-pressed={musicOn}
           aria-label={musicOn ? 'Pause background music' : 'Play background music'}
-          title={musicOn ? 'Pause music' : 'Play music'}
-          className={`w-11 h-11 md:w-12 md:h-12 rounded-full glass flex items-center justify-center transition-colors duration-300 hover:border-coral/50 ${
+          title={waiting ? 'Music starts when you tap the page. Press to turn it off' : musicOn ? 'Pause music' : 'Play music'}
+          className={`relative w-11 h-11 md:w-12 md:h-12 rounded-full glass flex items-center justify-center transition-colors duration-300 hover:border-coral/50 ${
             musicOn ? 'bg-coral/20 border-coral/50' : ''
           }`}
         >
+          {waiting && (
+            <span className="absolute inset-0 rounded-full border-2 border-coral/60 animate-ping motion-reduce:animate-none" aria-hidden="true" />
+          )}
           {isLoading ? (
             <span className="w-4 h-4 border-2 border-coral border-t-transparent rounded-full animate-spin" aria-hidden="true" />
           ) : (
@@ -196,7 +279,7 @@ const AudioPlayer = () => {
             </span>
           )}
         </button>
-      </div>
+      </aside>
     </>
   );
 };
